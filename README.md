@@ -7,8 +7,10 @@ you must run the following
 
 ```
 mkdir -p data/mirror
-rsync -av --del --include '*/' --include '*99-8.txt' --exclude '*' aleph.gutenberg.org::gutenberg data/mirror/
+rsync -av --del --include '*/' --include '*99-0.txt' --exclude '*' aleph.gutenberg.org::gutenberg data/mirror/
 ```
+
+this will download only PG books ending in 99 and encoded in UTF-8 (-0.txt suffix)
 
 ## Populating the raw text folder
 
