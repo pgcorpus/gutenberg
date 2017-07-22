@@ -10,4 +10,7 @@ mkdir -p data/mirror
 rsync -av --del --include '*/' --include '*99-8.txt' --exclude '*' aleph.gutenberg.org::gutenberg data/mirror/
 ```
 
+## Populating the raw text folder
+
+At the moment, run the notebook in `nb_dev/`
 
