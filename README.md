@@ -13,7 +13,6 @@ rsync -av --del --include '*/' --include '*99-0.txt' --exclude '*' aleph.gutenbe
 this will download only PG books ending in 99 and encoded in UTF-8 (-0.txt suffix)
 
 ## Populating the raw text folder
-
 At the moment, run the notebook in `nb_dev/`
 
 
