@@ -1,0 +1,16 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: linux-64
+@EXPLICIT
+https://repo.continuum.io/pkgs/free/linux-64/mkl-2017.0.3-0.tar.bz2
+https://repo.continuum.io/pkgs/free/linux-64/numpy-1.13.1-py36_0.tar.bz2
+https://repo.continuum.io/pkgs/free/linux-64/openssl-1.0.2l-0.tar.bz2
+https://repo.continuum.io/pkgs/free/linux-64/pip-9.0.1-py36_1.tar.bz2
+https://repo.continuum.io/pkgs/free/linux-64/python-3.6.2-0.tar.bz2
+https://repo.continuum.io/pkgs/free/linux-64/readline-6.2-2.tar.bz2
+https://repo.continuum.io/pkgs/free/linux-64/setuptools-27.2.0-py36_0.tar.bz2
+https://repo.continuum.io/pkgs/free/linux-64/sqlite-3.13.0-0.tar.bz2
+https://repo.continuum.io/pkgs/free/linux-64/tk-8.5.18-0.tar.bz2
+https://repo.continuum.io/pkgs/free/linux-64/wheel-0.29.0-py36_0.tar.bz2
+https://repo.continuum.io/pkgs/free/linux-64/xz-5.2.2-1.tar.bz2
+https://repo.continuum.io/pkgs/free/linux-64/zlib-1.2.8-3.tar.bz2
