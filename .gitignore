@@ -1,6 +1,9 @@
 # data folder and all subfolders and files recursive
 data/**/*
 
+# metadata raw file
+metadata/rdf-files.tar.bz2
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
