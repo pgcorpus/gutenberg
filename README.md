@@ -14,3 +14,22 @@ rsync -av --del --include '*/' --include '*99-8.txt' --exclude '*' aleph.gutenbe
 
 At the moment, run the notebook in `nb_dev/`
 
+## Conda Environment
+
+Install conda as described here: https://www.digitalocean.com/community/tutorials/how-to-install-the-anaconda-python-distribution-on-ubuntu-16-04
+
+create an environment called 'gutenberg' with all the required packages:
+conda create --name gutenberg --file requirements.txt
+
+Activate the environment so that you can work with it:
+source activate gutenberg
+
+Deactivate the environment:
+source deactivate
+
+Add packages:
+conda install --name gutenberg <package>
+
+Update requirements.txt - file
+conda list --explicit > requirements.txt
+
