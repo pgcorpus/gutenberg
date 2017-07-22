@@ -16,6 +16,12 @@ this will download only PG books ending in 99 and encoded in UTF-8 (-0.txt suffi
 
 At the moment, run the notebook in `nb_dev/`
 
+
+## Removing headers and tails
+We take code from this repo: https://github.com/c-w/gutenberg  
+Use the `cleanup` function in `src/cleanup.py`. There is an example
+notebook in nb_dev 
+
 ## Conda Environment
 
 Install conda as described here: https://www.digitalocean.com/community/tutorials/how-to-install-the-anaconda-python-distribution-on-ubuntu-16-04
