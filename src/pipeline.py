@@ -6,7 +6,7 @@ import io
 import os
 
 def process_book(
-	path_to_raw=None,
+	path_to_raw_file=None,
 	text_dir="../data/text",
 	tokens_dir="../data/tokens",
 	counts_dir="../data/counts",
@@ -14,12 +14,25 @@ def process_book(
 	cleanup_f=strip_headers,
 	counting_f=None
 	):
+    """
+    Process a book, from raw data to counts.
 
+    The database is structured in the following levels of processing:
+
+    1. raw: the book as downloaded from PG site.
+    2. text: the book with headers/legal notices/etc removed.
+    3. tokens: the tokenized book. One token per line.
+    4. counts: the counts of all types. One type per line.
+
+    This function takes a file at the 'raw' level and computes the counts,
+    saving to disk the intermediate 'text' and 'tokens' files.
+
+    """
 	# get PG number
-    PG_number = path_to_raw.split("/")[-1].split("_")[0][2:]
+    PG_number = path_to_raw_file.split("/")[-1].split("_")[0][2:]
 
     # read raw file
-    with io.open(path_to_raw) as f:
+    with io.open(path_to_raw_file) as f:
         text = f.read()
 
     # clean it up
