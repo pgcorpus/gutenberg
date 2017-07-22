@@ -23,6 +23,9 @@ def cleanup(path,text_dir):
     with io.open(source_file,"w") as f:
         f.write(clean)
 
+
+############
+
 TEXT_START_MARKERS = frozenset((
     "*END*THE SMALL PRINT",
     "*** START OF THE PROJECT GUTENBERG",
