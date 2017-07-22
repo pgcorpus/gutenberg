@@ -7,11 +7,7 @@ you must run the following
 
 ```
 mkdir -p data/mirror
-rsync -av --del
-  --include '*/'
-  --include '*99-8.txt'
-  --exclude '*'
-  aleph.gutenberg.org::gutenberg data/mirror/
+rsync -av --del --include '*/' --include '*99-8.txt' --exclude '*' aleph.gutenberg.org::gutenberg data/mirror/
 ```
 
 
