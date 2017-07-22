@@ -8,7 +8,7 @@
 from nltk.tokenize.treebank import TreebankWordTokenizer
 from nltk.tokenize import sent_tokenize
 
-def tokenize(text):
+def tokenize_text(text):
     '''Tokenize a string into a list of tokens.
     Use NLTK's Treebankwordtokenizer.
     Note that we first split into sentences using NLTK's sent_tokenize.
