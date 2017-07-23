@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import shutil
 
@@ -31,5 +32,8 @@ def populate_raw_from_mirror(
                 # copy files
                 source = os.path.join(dirName,fname)
                 target = os.path.join(raw_dir,"PG"+PGnumber+"_raw.txt")
+                
+                # DETECT ENCODING
+                
                 if not os.path.isfile(target) or overwrite:
                     shutil.copy2(source,target)

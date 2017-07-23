@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Extract metadata from Project Gutenberg RDF catalog into a Python dict.
 
