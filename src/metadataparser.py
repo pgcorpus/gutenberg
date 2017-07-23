@@ -22,7 +22,6 @@ except ImportError:
 
 # PICKLEFILE = '../data/metadata/md.pickle.gz'  # The Python dict produced by this module
 RDFFILES = '../data/metadata/rdf-files.tar.bz2'  # The catalog downloaded from Gutenberg
-RDFURL = r'http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.bz2'
 META_FIELDS = ('id', 'author', 'title', 'downloads', 'formats', 'type', 'LCC',
         'subjects', 'authoryearofbirth', 'authoryearofdeath', 'language')
 NS = dict(
@@ -41,18 +40,21 @@ ETEXTRE = re.compile(r'''
 
 
 def make_df_metadata(path_xml = '../metadata/rdf-files.tar.bz2',\
-                     path_df = '../metadata/metadata.csv'):
+                     path_out = '../metadata/metadata.csv',
+                     update = False):
     '''Main function to extract metadata.
     We will save metainformation on all books in a csv-file (derived from pandas dataframe).
     IN:
-    - path_xml, str, location of the rdf-file-- can be downloaded from http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.bz2
-    - path_df, str, where to save csv-file
+    - path_xml, str, location of the rdf-file-- 
+        if it does not exist, we download it from http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.bz2
+    - path_out, str, where to save csv-file
+    - update, bool (default:False); download the latest rdf-file even if it already exists in path_xml
     OUT:
-    - 
+    - creates metadata.csv in path_out
     '''
 
     ## parse the xml-file
-    md = readmetadata(path_xml)
+    md = readmetadata(path_xml, update = update)
     ## convert into a pandas dataframe
     df = pd.DataFrame.from_dict(md).T
     ## which fields to keep
@@ -65,11 +67,11 @@ def make_df_metadata(path_xml = '../metadata/rdf-files.tar.bz2',\
     df['id']=df['id'].apply(lambda x: 'PG%s'%(x))
     ##id as index
     df = df.set_index('id')
-    df.to_csv(path_df)
+    df.to_csv(path_out)
     return None
 
 
-def readmetadata(RDFFILES):
+def readmetadata(RDFFILES, update = False):
     """Read/create cached metadata dump of Gutenberg catalog.
 
     Returns:
@@ -96,7 +98,7 @@ def readmetadata(RDFFILES):
     #     metadata = pickle.load(gzip.open(PICKLEFILE, 'rb'))
     # else:
     metadata = {}
-    for xml in getrdfdata(RDFFILES):
+    for xml in getrdfdata(RDFFILES, update = update):
         ebook = xml.find(r'{%(pg)s}ebook' % NS)
         if ebook is None:
             continue
@@ -107,17 +109,21 @@ def readmetadata(RDFFILES):
     return metadata
 
 
-def getrdfdata(RDFFILES):
+def getrdfdata(RDFFILES, update = False):
     """Downloads Project Gutenberg RDF catalog.
 
     Yields:
         xml.etree.ElementTree.Element: An etext meta-data definition.
 
     """
-    if not os.path.exists(RDFFILES):
+    ### url of xml-metadata
+    RDFURL = r'http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.bz2'
+
+
+
+    if not os.path.exists(RDFFILES) or update == True:
         # _, _ = urllib.urlretrieve(RDFURL, RDFFILES)
-        # _, _ = urllib.request.urlretrieve(RDFURL, RDFFILES)
-        print('RDF-FILE DOES NOT EXIST')
+        _, _ = urllib.request.urlretrieve(RDFURL, RDFFILES)
     with tarfile.open(RDFFILES) as archive:
         for tarinfo in archive:
             yield ElementTree.parse(archive.extractfile(tarinfo))
