@@ -40,3 +40,9 @@ conda install --name gutenberg <package>
 Update requirements.txt - file
 conda list --explicit > requirements.txt
 
+## Packages needed if you dont want to use conda
+python (3.)
+NLTK
+pandas
+jupyter (optional, for the example notebooks)
+
