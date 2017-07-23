@@ -7,9 +7,9 @@ import os
 
 def process_book(
 	path_to_raw_file=None,
-	text_dir="../data/text",
-	tokens_dir="../data/tokens",
-	counts_dir="../data/counts",
+	text_dir=None,
+	tokens_dir=None,
+	counts_dir=None,
 	tokenize_f=tokenize_text,
 	cleanup_f=strip_headers,
 	counting_f=None
@@ -28,6 +28,18 @@ def process_book(
     saving to disk the intermediate 'text' and 'tokens' files.
 
     """
+    if text_dir is None:
+        raise ValueError("You must specify a path to save the text files.")
+        
+    if tokens_dir is None:
+        raise ValueError("You must specify a path to save the tokens files.")
+        
+    if counts_dir is None:
+        raise ValueError("You must specify a path to save the counts files.")
+        
+    if path_to_raw_file is None:
+        raise ValueError("You must specify a path to the raw file to process.")
+        
 	# get PG number
     PG_number = path_to_raw_file.split("/")[-1].split("_")[0][2:]
 
