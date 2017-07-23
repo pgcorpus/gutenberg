@@ -1,31 +1,28 @@
-# gutenberg
+# Project Gutenberg
 
-## Mirroring the PG site
-We rsync a mirror of the PG website at `data/mirror/`.
-At the moment we work with 1% of the books, to create a local copy
-you must run the following
-
+## Getting the data
+To get a local copy of the PG data, just run
 ```
-mkdir -p data/mirror
-rsync -av --del --include '*/' --include '*99-0.txt' --exclude '*' aleph.gutenberg.org::gutenberg data/mirror/
+python get_data.py
 ```
+This will download a copy of all UTF-8 books in PG and will create a csv file with metadata (e.g. author, title, year, ...).
 
-this will download only PG books ending in 99 and encoded in UTF-8 (-0.txt suffix)
-
-## Populating the raw text folder
-At the moment, run the notebook in `nb_dev/`
+Notice that if you already have some of the data, the program will only download those you are missing (we use `rsync` for this). It is hence easy to update the dataset periodically to keep it up-to-date by just running `get_data.py`.
 
 
-## Removing headers and tails
-We take code from this repo: https://github.com/c-w/gutenberg  
-Use the `cleanup` function in `src/cleanup.py`. There is an example
-notebook in nb_dev 
+## Processing the data
+To process all the data in the `raw/` directory, run
+```
+python process_data.py
+```
+This will fill in the `text/`, `tokens/` and `counts/` folders.
 
-## Conda Environment
+
+## Conda Environment (for linux-64 machines)
 
 Install conda as described here: https://www.digitalocean.com/community/tutorials/how-to-install-the-anaconda-python-distribution-on-ubuntu-16-04
 
-create an environment called 'gutenberg' with all the required packages:
+create an environment called 'gutenberg' with all the required packages (at the moment, only for linux-64):
 ```
 conda create --name gutenberg --file requirements.txt
 ```
