@@ -5,6 +5,8 @@ from collections import Counter
 import io
 import os
 
+
+
 def process_book(
 	path_to_raw_file=None,
 	text_dir=None,
@@ -12,7 +14,6 @@ def process_book(
 	counts_dir=None,
 	tokenize_f=tokenize_text,
 	cleanup_f=strip_headers,
-	counting_f=None
 	):
     """
     Process a book, from raw data to counts.

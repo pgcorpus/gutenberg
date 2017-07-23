@@ -4,8 +4,7 @@ Extract metadata from Project Gutenberg RDF catalog into a Python dict.
 Based on https://bitbucket.org/c-w/gutenberg/
 """
 
-
-import os
+import os 
 import re
 import gzip
 import tarfile

@@ -4,6 +4,7 @@ import shutil
 def populate_raw_from_mirror(
     mirror_dir = "../data/mirror/",
     raw_dir = "../data/raw/",
+    overwrite = False
     ):
     """
     Populate the raw/ directory using the mirror/ directory.
@@ -13,6 +14,12 @@ def populate_raw_from_mirror(
 
     It ignores files with more than one dash (strange files)
     and those not in UTF-8 encoding (not ending in -0.txt).
+
+    Parameters
+    ----------
+    overwrite : bool
+        Whether to overwrite files in raw.
+
     """ 
     for dirName, subdirList, fileList in os.walk(mirror_dir):
         for fname in fileList:
@@ -24,4 +31,5 @@ def populate_raw_from_mirror(
                 # copy files
                 source = os.path.join(dirName,fname)
                 target = os.path.join(raw_dir,"PG"+PGnumber+"_raw.txt")
-                shutil.copy2(source,target)
+                if not os.path.isfile(target) or overwrite:
+                    shutil.copy2(source,target)
