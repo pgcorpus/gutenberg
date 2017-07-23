@@ -26,23 +26,32 @@ notebook in nb_dev
 Install conda as described here: https://www.digitalocean.com/community/tutorials/how-to-install-the-anaconda-python-distribution-on-ubuntu-16-04
 
 create an environment called 'gutenberg' with all the required packages:
+```
 conda create --name gutenberg --file requirements.txt
+```
 
 Activate the environment so that you can work with it:
+```
 source activate gutenberg
+```
 
 Deactivate the environment:
+```
 source deactivate
+```
 
-Add packages:
+Add packages to the environment:
+```
 conda install --name gutenberg <package>
+```
 
-Update requirements.txt - file
+Update requirements.txt file:
+```
 conda list --explicit > requirements.txt
-
+```
 ## Packages needed if you dont want to use conda
-python (3.)
-NLTK
-pandas
-jupyter (optional, for the example notebooks)
++ python (3.)
++ NLTK
++ pandas
++ jupyter (optional, for the example notebooks)
 
