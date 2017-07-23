@@ -26,6 +26,7 @@ def populate_raw_from_mirror(
         for fname in fileList:
             # ignore strange files and file not in UTF8
             if len(fname.split("-"))==2 and fname[-6::]=="-0.txt" :
+            #if fname[-6::]=="-0.txt" :
                 # get PG number
                 PGnumber = fname.split("-")[0]
 
