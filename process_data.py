@@ -47,11 +47,14 @@ if __name__=='__main__':
 
     ## loop over all books in the raw-folder
     for filename in glob.iglob( os.path.join( args.raw,'PG*_raw.txt' ) ):
-        ## process the book: strip headers, tokenize, count
-        process_book(
-            path_to_raw_file=filename,
-            text_dir=args.output_text,
-            tokens_dir=args.output_tokens,
-            counts_dir=args.output_counts
-            )
-
+        
+        try:
+            ## process the book: strip headers, tokenize, count
+            process_book(
+                path_to_raw_file=filename,
+                text_dir=args.output_text,
+                tokens_dir=args.output_tokens,
+                counts_dir=args.output_counts
+                )
+        except:
+            print "# WARNING: cannot process '%s'" % filename
