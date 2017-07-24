@@ -1,10 +1,11 @@
 import argparse
 import os
 import subprocess
-
+ 
 import sys
 sys.path.append("src")
 from utils import populate_raw_from_mirror
+from metadataparser import make_df_metadata 
 
 if __name__=='__main__':
 
@@ -57,8 +58,20 @@ if __name__=='__main__':
     # update mirror
     # rsync -av --del --include '*/' --include '*99-0.txt' --exclude '*' aleph.gutenberg.org::gutenberg data/mirror/
 
-    args = ["rsync", "-av", "--del","--include", "*/", "--include", "*-0.txt", "--exclude", "*", "aleph.gutenberg.org::gutenberg", args.mirror]    
-    subprocess.call(args)
+    sp_args = ["rsync", "-avm", "--del",\
+                    "--include", "*/",\
+                    "--include", "*99.txt.utf8",\
+                    "--exclude", "*", "aleph.gutenberg.org::gutenberg", args.mirror]    
+    subprocess.call(sp_args)
+
+     sp_args = ["rsync", "-avm", "--del",\
+                    "--include", "*/",\
+                    "--include", "*99-0.txt",\
+                    "--exclude", "*", "aleph.gutenberg.org::gutenberg", args.mirror]    
+    subprocess.call(sp_args)
+
+
+
 
     # populate raw from mirror
     populate_raw_from_mirror(
@@ -68,6 +81,8 @@ if __name__=='__main__':
         )
 
     # update metadata
-    make_df_metadata(path_xml = os.path.join(args.metadata,'/rdf-files.tar.bz2'),
-                     path_out = os.path.join(args.metadata,'/metadata.csv'),
-                     update = args.keep_rdf)
+    make_df_metadata(
+        path_xml = os.path.join(args.metadata,'rdf-files.tar.bz2'),
+        path_out = os.path.join(args.metadata,'metadata.csv'),
+        update = args.keep_rdf
+        )
