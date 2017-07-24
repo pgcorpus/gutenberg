@@ -57,4 +57,4 @@ if __name__=='__main__':
                 counts_dir=args.output_counts
                 )
         except:
-            print "# WARNING: cannot process '%s'" % filename
+            print("# WARNING: cannot process '%s'",filename)

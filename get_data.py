@@ -4,7 +4,7 @@ import subprocess
  
 import sys
 sys.path.append("src")
-from utils import populate_raw_from_mirror
+from utils import populate_raw_from_mirror, erase_duplicates_in_mirror
 from metadataparser import make_df_metadata 
 
 if __name__=='__main__':
@@ -18,7 +18,7 @@ if __name__=='__main__':
     parser.add_argument(
         "-m", "--mirror",
         help="Path to the mirror folder that will be updated via rsync.",
-        default='data/mirror/',
+        default='data/.mirror/',
         type=str)
 
     # raw dir
@@ -55,23 +55,25 @@ if __name__=='__main__':
         raise ValueError("The specified metadata directory does not exist.")
 
 
-    # update mirror
-    # rsync -av --del --include '*/' --include '*99-0.txt' --exclude '*' aleph.gutenberg.org::gutenberg data/mirror/
+    # Update mirror
 
-    sp_args = ["rsync", "-avm", "--del",\
+    # These are older records
+    sp_args = ["rsync", "-avm",\
                     "--include", "*/",\
-                    "--include", "*99.txt.utf8",\
+                    "--include", "*77.txt.utf8",\
                     "--exclude", "*", "aleph.gutenberg.org::gutenberg", args.mirror]    
     subprocess.call(sp_args)
 
-    sp_args = ["rsync", "-avm", "--del",\
+    # These are newer
+    sp_args = ["rsync", "-avm",\
                     "--include", "*/",\
-                    "--include", "*99-0.txt",\
+                    "--include", "*77-0.txt",\
                     "--exclude", "*", "aleph.gutenberg.org::gutenberg", args.mirror]    
     subprocess.call(sp_args)
 
 
-
+    # Get rid of duplicates
+    erase_duplicates_in_mirror(mirror_dir=args.mirror)
 
     # populate raw from mirror
     populate_raw_from_mirror(

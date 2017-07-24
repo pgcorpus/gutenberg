@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import shutil
+import subprocess
 
 
 def get_PG_number(string):
@@ -24,9 +25,34 @@ def get_PG_number(string):
     assert PG_number.isnumeric()
     return PG_number
 
+
+
+def erase_duplicates_in_mirror(
+    mirror_dir = None,
+    ):
+    """
+    Look for duplicates in 'mirror_dir', and delete them.
+    Typical case is, there's two files corresponding to the
+    same PG identificator:
+
+    1) mirror/1/2/3/4/12345/12345-0.txt
+    2) mirror/cache/epub/12345/pg12345.txt.utf-8
+
+    We keep 1) and delete 2)
+    """
+    for dirName, subdirList, fileList in os.walk(mirror_dir):
+        for fname in fileList:
+            if len(fname.split("-"))<=2 and (fname[-6::]=="-0.txt"):
+                PGnumber = get_PG_number(fname)
+                possible_duplicate = os.path.join(mirror_dir,"cache","epub",PGnumber,"pg"+PGnumber+".txt.utf8")
+                if os.path.isfile(possible_duplicate):
+                    print("# WARNING:","PG"+str(PGnumber),"found twice, cache version deleted.")
+                    os.remove(possible_duplicate)
+
+
 def populate_raw_from_mirror(
-    mirror_dir = "../data/mirror/",
-    raw_dir = "../data/raw/",
+    mirror_dir = None,
+    raw_dir = None,
     overwrite = False
     ):
     """
@@ -43,7 +69,7 @@ def populate_raw_from_mirror(
     overwrite : bool
         Whether to overwrite files in raw.
 
-    """ 
+    """
     for dirName, subdirList, fileList in os.walk(mirror_dir):
         for fname in fileList:
             # ignore strange files and file not in UTF8
@@ -52,13 +78,13 @@ def populate_raw_from_mirror(
                 # get PG number
                 PGnumber = get_PG_number(fname)
 
-                # copy files
+                
+                
                 source = os.path.join(dirName,fname)
                 target = os.path.join(raw_dir,"PG"+PGnumber+"_raw.txt")
                 
-                # DETECT ENCODING
                 if os.path.isfile(target):
-                    print("# WARNING: '%s' already exists!",target)
-                    print("# current source: '%s'",source)
+                    print("# WARNING:",target,"already exists!")
+                    print("# current source: ",source)
                 if (not os.path.isfile(target)) or overwrite:
-                    shutil.copy2(source,target)
+                    subprocess.call(["ln","-f",source,target])
