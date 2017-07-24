@@ -60,14 +60,14 @@ if __name__=='__main__':
     # These are older records
     sp_args = ["rsync", "-avm",\
                     "--include", "*/",\
-                    "--include", "*77.txt.utf8",\
+                    "--include", "*.txt.utf8",\
                     "--exclude", "*", "aleph.gutenberg.org::gutenberg", args.mirror]    
     subprocess.call(sp_args)
 
     # These are newer
     sp_args = ["rsync", "-avm",\
                     "--include", "*/",\
-                    "--include", "*77-0.txt",\
+                    "--include", "*-0.txt",\
                     "--exclude", "*", "aleph.gutenberg.org::gutenberg", args.mirror]    
     subprocess.call(sp_args)
 
