@@ -64,7 +64,7 @@ if __name__=='__main__':
                     "--exclude", "*", "aleph.gutenberg.org::gutenberg", args.mirror]    
     subprocess.call(sp_args)
 
-     sp_args = ["rsync", "-avm", "--del",\
+    sp_args = ["rsync", "-avm", "--del",\
                     "--include", "*/",\
                     "--include", "*99-0.txt",\
                     "--exclude", "*", "aleph.gutenberg.org::gutenberg", args.mirror]    
