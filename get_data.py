@@ -56,22 +56,24 @@ if __name__=='__main__':
 
 
     # Update mirror
+    # we need to match the +  but not the - :
+    #
+    # + 12345 .   t   x  t .            utf  8
+    # - 12345 .   t   x  t .      utf8 .gzi  p
+    # + 12345 -   0   .  t x                 t 
+    #---------------------------------------------
+    #        [.-][t0][x.]t[x.]    *         [t8]
+    if True:
+        for n in range(10):
+            sp_args = ["rsync", "-avm",\
+                            "--include", "*/",\
+                            "--include", "*9%d[.-][t0][x.]t[x.]*[t8]"%n,\
+                            "--exclude", "*",\
+                            "aleph.gutenberg.org::gutenberg", args.mirror
+                            ]    
+            subprocess.Popen(sp_args)
 
-    # These are older records
-    sp_args = ["rsync", "-avm",\
-                    "--include", "*/",\
-                    "--include", "*.txt.utf8",\
-                    "--exclude", "*", "aleph.gutenberg.org::gutenberg", args.mirror]    
-    subprocess.call(sp_args)
-
-    # These are newer
-    sp_args = ["rsync", "-avm",\
-                    "--include", "*/",\
-                    "--include", "*-0.txt",\
-                    "--exclude", "*", "aleph.gutenberg.org::gutenberg", args.mirror]    
-    subprocess.call(sp_args)
-
-
+    
     # Get rid of duplicates
     erase_duplicates_in_mirror(mirror_dir=args.mirror)
 
