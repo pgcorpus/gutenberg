@@ -83,8 +83,8 @@ def populate_raw_from_mirror(
                 source = os.path.join(dirName,fname)
                 target = os.path.join(raw_dir,"PG"+PGnumber+"_raw.txt")
                 
-                if os.path.isfile(target):
-                    print("# WARNING:",target,"already exists!")
-                    print("# current source: ",source)
+                #if os.path.isfile(target):
+                #    print("# WARNING:",target,"already exists!")
+                #    print("# current source: ",source)
                 if (not os.path.isfile(target)) or overwrite:
                     subprocess.call(["ln","-f",source,target])
