@@ -22,7 +22,10 @@ def get_PG_number(string):
     elif string.find(".txt.utf8")>-1:
             PG_number =  string.replace(".txt.utf8","").replace("pg","")
 
-    assert PG_number.isnumeric()
+    if not PG_number.isnumeric():
+        print (string)
+        print(PG_number,"\n")
+        assert PG_number.isnumeric()
     return PG_number
 
 
@@ -42,7 +45,7 @@ def erase_duplicates_in_mirror(
     """
     for dirName, subdirList, fileList in os.walk(mirror_dir):
         for fname in fileList:
-            if len(fname.split("-"))<=2 and (fname[-6::]=="-0.txt"):
+            if len(fname.split("-"))<=2 and len(fname.split("."))<=2 and fname[-6::]=="-0.txt":
                 PGnumber = get_PG_number(fname)
                 possible_duplicate = os.path.join(mirror_dir,"cache","epub",PGnumber,"pg"+PGnumber+".txt.utf8")
                 if os.path.isfile(possible_duplicate):
@@ -74,7 +77,7 @@ def populate_raw_from_mirror(
         for fname in fileList:
             # ignore strange files and file not in UTF8
             # patterns to match are 12345-0.txt or pg12345.txt.utf8
-            if len(fname.split("-"))<=2 and (fname[-6::]=="-0.txt" or fname[-9::]==".txt.utf8"):
+            if (len(fname.split("."))==2 and len(fname.split("-"))==2 and fname[-6::]=="-0.txt") or (len(fname.split("-"))==3 and fname[-9::]==".txt.utf8"):
                 # get PG number
                 PGnumber = get_PG_number(fname)
 
