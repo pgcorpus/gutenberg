@@ -4,7 +4,7 @@ import subprocess
  
 import sys
 sys.path.append("src")
-from utils import populate_raw_from_mirror, erase_duplicates_in_mirror
+from utils import populate_raw_from_mirror, list_duplicates_in_mirror
 from metadataparser import make_df_metadata 
 
 if __name__=='__main__':
