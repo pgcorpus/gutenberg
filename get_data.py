@@ -73,7 +73,7 @@ if __name__=='__main__':
                             ]    
             subprocess.Popen(sp_args)
 
-    
+ 
     # Get rid of duplicates
     erase_duplicates_in_mirror(mirror_dir=args.mirror)
 
