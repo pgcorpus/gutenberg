@@ -7,16 +7,11 @@ import subprocess
 def get_PG_number(string):
     """
     Simply gets the PG number from different possible text files.
-    Patterns are: 12345-0.txt or 12345.txt.utf-8 or pg12345.txt.utf8
+    Patterns are: 12345-0.txt or pg12345.txt.utf8
     """
     # 12345-0.txt
     if string.find("-0.txt")>-1:
         PG_number = string.replace("-0.txt","")
-
-    # no files match this!
-    # # 12345.txt.utf-8
-    # elif string.find(".txt.utf-8")>-1:
-    #     PG_number =  string.replace(".txt.utf-8","")
 
     # pg12345.txt.utf8
     elif string.find(".txt.utf8")>-1:
@@ -77,7 +72,7 @@ def populate_raw_from_mirror(
         for fname in fileList:
             # ignore strange files and file not in UTF8
             # patterns to match are 12345-0.txt or pg12345.txt.utf8
-            if (len(fname.split("."))==2 and len(fname.split("-"))==2 and fname[-6::]=="-0.txt") or (len(fname.split("-"))==3 and fname[-9::]==".txt.utf8"):
+            if (len(fname.split("."))==2 and len(fname.split("-"))==2 and fname[-6::]=="-0.txt") or (len(fname.split("."))==3 and len(fname.split("-"))==1 and fname[-9::]==".txt.utf8"):
                 # get PG number
                 PGnumber = get_PG_number(fname)
 
