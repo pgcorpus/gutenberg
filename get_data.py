@@ -76,7 +76,7 @@ if __name__=='__main__':
                     "--exclude", "*",\
                     "aleph.gutenberg.org::gutenberg", args.mirror
                     ]    
-    subprocess.Popen(sp_args)
+    subprocess.call(sp_args)
 
  
     # Get rid of duplicates
