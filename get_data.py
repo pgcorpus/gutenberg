@@ -35,6 +35,13 @@ if __name__=='__main__':
         default='metadata/',
         type=str)
 
+    # pattern matching
+    parser.add_argument(
+        "-p", "--pattern",
+        help="Patterns to get only a subset of books.",
+        default='*',
+        type=str)
+
     # update argument
     parser.add_argument("-k","--keep_rdf",
         help="If there is an RDF file in metadata dir, do not overwrite it.")
@@ -63,15 +70,13 @@ if __name__=='__main__':
     # + 12345 -   0   .  t x                 t 
     #---------------------------------------------
     #        [.-][t0][x.]t[x.]    *         [t8]
-    if True:
-        for n in range(10):
-            sp_args = ["rsync", "-avm",\
-                            "--include", "*/",\
-                            "--include", "*9%d[.-][t0][x.]t[x.]*[t8]"%n,\
-                            "--exclude", "*",\
-                            "aleph.gutenberg.org::gutenberg", args.mirror
-                            ]    
-            subprocess.Popen(sp_args)
+    sp_args = ["rsync", "-avm",\
+                    "--include", "*/",\
+                    "--include", "%s[.-][t0][x.]t[x.]*[t8]"%args.pattern,\
+                    "--exclude", "*",\
+                    "aleph.gutenberg.org::gutenberg", args.mirror
+                    ]    
+    subprocess.Popen(sp_args)
 
  
     # Get rid of duplicates
