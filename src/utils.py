@@ -28,18 +28,19 @@ def list_duplicates_in_mirror(
     mirror_dir = None,
     ):
     """
-    Look for duplicates in 'mirror_dir', and delete them.
+    Look for duplicates in 'mirror_dir', and list them.
     Typical case is, there's two files corresponding to the
     same PG identificator:
 
     1) mirror/1/2/3/4/12345/12345-0.txt
     2) mirror/cache/epub/12345/pg12345.txt.utf-8
 
-    We keep 1) and delete 2)
+    We populate 1) and list 2) as a duplicate
     """
     dups_list = []
     for dirName, subdirList, fileList in os.walk(mirror_dir):
-        for fname in glob.iglob(os.path.join(dirName,"*-0.txt")):
+        for matchpath in glob.iglob(os.path.join(dirName,"*-0.txt")):
+            fname = matchpath.split("/")[-1]
             # fname must have exactly one "." and one "-"
             if (len(fname.split("."))==2 and len(fname.split("-"))==2):
                 PGnumber = get_PG_number(fname)
@@ -76,11 +77,15 @@ def populate_raw_from_mirror(
     """
     for dirName, subdirList, fileList in os.walk(mirror_dir):
         # patterns to match are 12345-0.txt or pg12345.txt.utf8
-        for fname in glob.iglob(os.path.join(dirName,"[p123456789][g0123456789][0-9]*")):
+        for matchpath in glob.iglob(os.path.join(dirName,"[p123456789][g0123456789][0-9]*")):
+            fname = matchpath.split("/")[-1]
             # check that file is not in dups_list
-            if os.path.join(dirName,fname) not in dups_list:
+            if matchpath not in dups_list:
+                print("# i am considering %s"%fname)
                 # avoid files with more "." or "-" than expected
-                if (len(fname.split("."))==2 and len(fname.split("-"))==2 and fname[-6::]=="-0.txt") or (len(fname.split("."))==3 and len(fname.split("-"))==1 and fname[-9::]==".txt.utf8"):
+                print(fname,len(fname.split(".")),"dots; ",len(fname.split("-")),"dashes")
+                if (len(fname.split("."))==2 and len(fname.split("-"))==2 and fname[-6::]=="-0.txt")\
+                or (len(fname.split("."))==3 and len(fname.split("-"))==1 and fname[-9::]==".txt.utf8"):
                     # get PG number
                     PGnumber = get_PG_number(fname)
 
@@ -89,6 +94,8 @@ def populate_raw_from_mirror(
                     
                     if (not os.path.isfile(target)) or overwrite:
                         subprocess.call(["ln","-f",source,target])
+                else:
+                    print("but I failed!\n\n")
             # if file was not in dupes list and we are not quiet
             elif not quiet:
                 print("# WARNING: file %s skipped due to duplication" % fname)
