@@ -18,34 +18,27 @@ python process_data.py
 This will fill in the `text/`, `tokens/` and `counts/` folders.
 
 
-## Conda Environment (for linux-64 machines)
+## Conda Environment
 
-Install conda as described here: https://www.digitalocean.com/community/tutorials/how-to-install-the-anaconda-python-distribution-on-ubuntu-16-04
+Install conda as described here https://www.digitalocean.com/community/tutorials/how-to-install-the-anaconda-python-distribution-on-ubuntu-16-04
 
-create an environment called 'gutenberg' with all the required packages (at the moment, only for linux-64):
+
+create an environment called 'gutenberg' with all the required packages:
 ```
 conda create --name gutenberg --file requirements.txt
 ```
+using the `requirements.txt` file corresponding to your platform.
 
-Activate the environment so that you can work with it:
-```
-source activate gutenberg
-```
+Activate the environment so that you can work with it: `source activate gutenberg`
 
-Deactivate the environment:
-```
-source deactivate
-```
+Deactivate the environment: `source deactivate`
 
-Add packages to the environment:
-```
-conda install --name gutenberg <package>
-```
+Add packages to the environment: `conda install --name gutenberg <package>`
 
-Update requirements.txt file:
-```
-conda list --explicit > requirements.txt
-```
+Update requirements with `conda list --explicit > requirements-your-platform.txt`
+to create platform-specific links, or `conda list -e > requirements.txt` for universal links.
+
+
 ## Packages needed if you dont want to use conda
 + python (3.)
 + NLTK
