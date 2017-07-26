@@ -121,8 +121,8 @@ def getrdfdata(RDFFILES, update = False):
 
 
 
-    if not os.path.exists(RDFFILES) or update == True:
-        # _, _ = urllib.urlretrieve(RDFURL, RDFFILES)
+    if not os.path.exists(RDFFILES) or update is True:
+        # _, _ = urllib.urlretrieve(RDFURL, RDFFILES) # python 2 syntax
         _, _ = urllib.request.urlretrieve(RDFURL, RDFFILES)
     with tarfile.open(RDFFILES) as archive:
         for tarinfo in archive:

@@ -40,6 +40,11 @@ if __name__=='__main__':
         default='*',
         type=str)
 
+    # quiet argument, to supress info
+    parser.add_argument("-q","--quiet",
+        action="store_true",
+        help="Quiet mode, do not print info, warnings, etc"
+        )
 
     ## add arguments to parser
     args = parser.parse_args()
@@ -53,8 +58,11 @@ if __name__=='__main__':
         raise ValueError("The directory for output of counts '%s' does not exist"%(args.output_counts))
 
     ## loop over all books in the raw-folder
+    pbooks=0 
     for filename in glob.iglob( os.path.join( args.raw,'PG%s_raw.txt'%(args.pattern) ) ):
-        
+        # The process_books function will fail very rarely, whne
+        # a file tagged as UTf-8 is not really UTF-8. We kust 
+        # skip those books.  
         try:
             # process the book: strip headers, tokenize, count
             process_book(
@@ -63,5 +71,9 @@ if __name__=='__main__':
                 tokens_dir=args.output_tokens,
                 counts_dir=args.output_counts
                 )
+            pbooks += 1
+            if not args.quiet:
+                print("Processed %d books..."%pbooks,end="\r")
         except:
-            print("# WARNING: cannot process '%s'"%filename)
+            if not args.quiet:
+                print("# WARNING: cannot process '%s'"%filename)

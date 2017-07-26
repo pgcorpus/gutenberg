@@ -44,14 +44,17 @@ if __name__=='__main__':
 
     # update argument
     parser.add_argument("-k","--keep_rdf",
+        action="store_true",
         help="If there is an RDF file in metadata dir, do not overwrite it.")
 
     # update argument
     parser.add_argument("-owr","--overwrite_raw",
+        action="store_true",
         help="Overwrite files in raw.")
 
     # quiet argument, to supress info
     parser.add_argument("-q","--quiet",
+        action="store_true",
         help="Quiet mode, do not print info, warnings, etc"
         )
 

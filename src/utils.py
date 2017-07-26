@@ -54,7 +54,7 @@ def populate_raw_from_mirror(
     overwrite = False
     ):
     """
-    Populate the raw/ directory using the mirror/ directory.
+    Populate the raw/ directory using the .mirror/ directory.
 
     This function traverses 'mirror_dir' and copies all .txt files
     into 'raw_dir'. Notice it also adds the "PG" suffix.
