@@ -50,6 +50,11 @@ if __name__=='__main__':
     parser.add_argument("-owr","--overwrite_raw",
         help="Overwrite files in raw.")
 
+    # quiet argument, to supress info
+    parser.add_argument("-q","--quiet",
+        help="Quiet mode, do not print info, warnings, etc"
+        )
+
     # create the parser
     args = parser.parse_args()
     
@@ -61,16 +66,26 @@ if __name__=='__main__':
     if not os.path.isdir(args.metadata):
         raise ValueError("The specified metadata directory does not exist.")
 
+    # Update the .mirror directory via rsync
+    # --------------------------------------
+    # We sync the 'mirror_dir' with PG's site via rsync
+    # The matching pattern, explained below, should match
+    # only UTF-8 files.
 
-    # Update mirror
-    # we need to match the +  but not the - :
+    # pass the -v flag to rsync if not in quiet mode
+    if args.quiet:
+        vstring=""
+    else:
+        vstring="v"
+
+    # Pattern to match the +  but not the - :
     #
     # + 12345 .   t   x  t .            utf  8
     # - 12345 .   t   x  t .      utf8 .gzi  p
     # + 12345 -   0   .  t x                 t 
     #---------------------------------------------
     #        [.-][t0][x.]t[x.]    *         [t8]
-    sp_args = ["rsync", "-avm",\
+    sp_args = ["rsync", "-am%s"%vstring,\
                     "--include", "*/",\
                     "--include", "%s[.-][t0][x.]t[x.]*[t8]"%args.pattern,\
                     "--exclude", "*",\
@@ -80,16 +95,27 @@ if __name__=='__main__':
 
  
     # Get rid of duplicates
+    # ---------------------
+    # A very small portion of books are stored more than 
+    # once in PG's site. We keep the newest one, see
+    # erase_duplicates_in_mirror docstring.
     erase_duplicates_in_mirror(mirror_dir=args.mirror)
 
-    # populate raw from mirror
+    # Populate raw from mirror
+    # ------------------------
+    # We populate 'raw_dir' hardlinking to 
+    # the hidden 'mirror_dir'. Names are standarized
+    # into PG12345_raw.txt form.
     populate_raw_from_mirror(
         mirror_dir = args.mirror,
         raw_dir = args.raw,
         overwrite = args.overwrite_raw
         )
 
-    # update metadata
+    # Update metadata
+    # ---------------
+    # By default, update the whole metadata csv
+    # file each time new data is downloaded.
     make_df_metadata(
         path_xml = os.path.join(args.metadata,'rdf-files.tar.bz2'),
         path_out = os.path.join(args.metadata,'metadata.csv'),
