@@ -24,7 +24,7 @@ def get_PG_number(string):
     return PG_number
 
 
-def erase_duplicates_in_mirror(
+def list_duplicates_in_mirror(
     mirror_dir = None,
     ):
     """
@@ -37,6 +37,7 @@ def erase_duplicates_in_mirror(
 
     We keep 1) and delete 2)
     """
+    dups_list = []
     for dirName, subdirList, fileList in os.walk(mirror_dir):
         for fname in glob.iglob(os.path.join(dirName,"*-0.txt")):
             # fname must have exactly one "." and one "-"
@@ -44,14 +45,17 @@ def erase_duplicates_in_mirror(
                 PGnumber = get_PG_number(fname)
                 possible_duplicate = os.path.join(mirror_dir,"cache","epub",PGnumber,"pg"+PGnumber+".txt.utf8")
                 if os.path.isfile(possible_duplicate):
-                    print("# WARNING:","PG"+str(PGnumber),"found twice, cache version deleted.")
-                    os.remove(possible_duplicate)
-
+                    #print("# WARNING:","PG"+str(PGnumber),"found twice, cache version deleted.")
+                    #os.remove(possible_duplicate)
+                    dups_list.append(possible_duplicate)
+    return dups_list
 
 def populate_raw_from_mirror(
     mirror_dir = None,
     raw_dir = None,
-    overwrite = False
+    overwrite = False,
+    dups_list = None,
+    quiet = False
     ):
     """
     Populate the raw/ directory using the .mirror/ directory.
@@ -66,18 +70,28 @@ def populate_raw_from_mirror(
     ----------
     overwrite : bool
         Whether to overwrite files in raw.
-
+    dups_list :  list of strings
+        A list of duplicates produced by list_duplicates_in_mirror.
+        Files in this list are not copied into raw.
     """
     for dirName, subdirList, fileList in os.walk(mirror_dir):
         # patterns to match are 12345-0.txt or pg12345.txt.utf8
         for fname in glob.iglob(os.path.join(dirName,"[p123456789][g0123456789][0-9]*")):
-            # avoid files with more "." or "-" than expected
-            if (len(fname.split("."))==2 and len(fname.split("-"))==2 and fname[-6::]=="-0.txt") or (len(fname.split("."))==3 and len(fname.split("-"))==1 and fname[-9::]==".txt.utf8"):
-                # get PG number
-                PGnumber = get_PG_number(fname)
+            # check that file is not in dups_list
+            if os.path.join(dirName,fname) not in dups_list:
+                # avoid files with more "." or "-" than expected
+                if (len(fname.split("."))==2 and len(fname.split("-"))==2 and fname[-6::]=="-0.txt") or (len(fname.split("."))==3 and len(fname.split("-"))==1 and fname[-9::]==".txt.utf8"):
+                    # get PG number
+                    PGnumber = get_PG_number(fname)
 
-                source = os.path.join(dirName,fname)
-                target = os.path.join(raw_dir,"PG"+PGnumber+"_raw.txt")
-                
-                if (not os.path.isfile(target)) or overwrite:
-                    subprocess.call(["ln","-f",source,target])
+                    source = os.path.join(dirName,fname)
+                    target = os.path.join(raw_dir,"PG"+PGnumber+"_raw.txt")
+                    
+                    if (not os.path.isfile(target)) or overwrite:
+                        subprocess.call(["ln","-f",source,target])
+            # if file was not in dupes list and we are not quiet
+            elif not quiet:
+                print("# WARNING: file %s skipped due to duplication" % fname)
+
+
+

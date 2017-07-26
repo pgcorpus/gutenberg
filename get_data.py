@@ -102,7 +102,7 @@ if __name__=='__main__':
     # A very small portion of books are stored more than 
     # once in PG's site. We keep the newest one, see
     # erase_duplicates_in_mirror docstring.
-    erase_duplicates_in_mirror(mirror_dir=args.mirror)
+    dups_list = list_duplicates_in_mirror(mirror_dir=args.mirror)
 
     # Populate raw from mirror
     # ------------------------
@@ -112,7 +112,9 @@ if __name__=='__main__':
     populate_raw_from_mirror(
         mirror_dir = args.mirror,
         raw_dir = args.raw,
-        overwrite = args.overwrite_raw
+        overwrite = args.overwrite_raw,
+        dups_list = dups_list,
+        quiet = args.quiet
         )
 
     # Update metadata
