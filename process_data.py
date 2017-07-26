@@ -33,6 +33,13 @@ if __name__=='__main__':
         help="Path to counts-output (counts_dir)",
         default='data/counts/',
         type=str)
+    ## pattern to specify subset of books
+    parser.add_argument(
+        "-p", "--pattern",
+        help="Patttern to specify a subset of books",
+        default='*',
+        type=str)
+
 
     ## add arguments to parser
     args = parser.parse_args()
@@ -46,10 +53,10 @@ if __name__=='__main__':
         raise ValueError("The directory for output of counts '%s' does not exist"%(args.output_counts))
 
     ## loop over all books in the raw-folder
-    for filename in glob.iglob( os.path.join( args.raw,'PG*_raw.txt' ) ):
+    for filename in glob.iglob( os.path.join( args.raw,'PG%s_raw.txt'%(args.pattern) ) ):
         
         try:
-            ## process the book: strip headers, tokenize, count
+            # process the book: strip headers, tokenize, count
             process_book(
                 path_to_raw_file=filename,
                 text_dir=args.output_text,
@@ -57,4 +64,4 @@ if __name__=='__main__':
                 counts_dir=args.output_counts
                 )
         except:
-            print("# WARNING: cannot process '%s'",filename)
+            print("# WARNING: cannot process '%s'"%filename)
