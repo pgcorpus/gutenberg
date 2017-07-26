@@ -14,6 +14,7 @@ def process_book(
 	counts_dir=None,
 	tokenize_f=tokenize_text,
 	cleanup_f=strip_headers,
+        overwrite_all=False
 	):
     """
     Process a book, from raw data to counts.
@@ -28,6 +29,16 @@ def process_book(
     This function takes a file at the 'raw' level and computes the counts,
     saving to disk the intermediate 'text' and 'tokens' files.
 
+    Overwrite policy
+    ----------------
+    By default a book is processed in full except if all the 
+    files already exist (raw,text,tokens and counts). The overwrite_all
+    keyword can cahnge this behaviour.
+
+    Parameters
+    ----------
+    overwrite_all : bool
+        If set to True, everything is processed regargless of existing files.
     """
     if text_dir is None:
         raise ValueError("You must specify a path to save the text files.")
@@ -40,36 +51,40 @@ def process_book(
         
     if path_to_raw_file is None:
         raise ValueError("You must specify a path to the raw file to process.")
-        
-	# get PG number
+   
+    # get PG number
     PG_number = path_to_raw_file.split("/")[-1].split("_")[0][2:]
 
-    # read raw file
-    with io.open(path_to_raw_file) as f:
-        text = f.read()
+    if overwrite_all or\
+        (not os.path.isfile(os.path.join(text_dir,"PG%s_text.txt"%PG_number))) or \
+        (not os.path.isfile(os.path.join(tokens_dir,"PG%s_tokens.txt"%PG_number))) or \
+        (not os.path.isfile(os.path.join(counts_dir,"PG%s_counts.txt"%PG_number))):
+        # read raw file
+        with io.open(path_to_raw_file) as f:
+            text = f.read()
 
-    # clean it up
-    clean = cleanup_f(text)
+        # clean it up
+        clean = cleanup_f(text)
 
-    # write text file
-    target_file = os.path.join(text_dir,"PG%s_text.txt"%PG_number)
-    with io.open(target_file,"w") as f:
-        f.write(clean)
+        # write text file
+        target_file = os.path.join(text_dir,"PG%s_text.txt"%PG_number)
+        with io.open(target_file,"w") as f:
+            f.write(clean)
 
-    # compute tokens
-    tokens = tokenize_f(clean)
+        # compute tokens
+        tokens = tokenize_f(clean)
+   
+        # write tokens file
+        target_file = os.path.join(tokens_dir,"PG%s_tokens.txt"%PG_number)
+        with io.open(target_file,"w") as f:
+            f.write("\n".join(tokens))
 
-    # write tokens file
-    target_file = os.path.join(tokens_dir,"PG%s_tokens.txt"%PG_number)
-    with io.open(target_file,"w") as f:
-        f.write("\n".join(tokens))
-
-    # compute counts
-    counts = Counter(tokens)
-
-    # write counts file
-    target_file = os.path.join(counts_dir,"PG%s_counts.txt"%PG_number)
-    with io.open(target_file,"w") as f:
-        f.write("\n".join([w+"\t"+str(c) for w,c in counts.most_common()]))
-    
+        # compute counts
+        counts = Counter(tokens)
+        
+        # write counts file
+        target_file = os.path.join(counts_dir,"PG%s_counts.txt"%PG_number)
+        with io.open(target_file,"w") as f:
+            f.write("\n".join([w+"\t"+str(c) for w,c in counts.most_common()]))
+        
     
