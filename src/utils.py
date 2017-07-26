@@ -2,7 +2,7 @@
 import os
 import shutil
 import subprocess
-
+import glob
 
 def get_PG_number(string):
     """
@@ -18,11 +18,10 @@ def get_PG_number(string):
             PG_number =  string.replace(".txt.utf8","").replace("pg","")
 
     if not PG_number.isnumeric():
-        print (string)
+        print(string)
         print(PG_number,"\n")
         assert PG_number.isnumeric()
     return PG_number
-
 
 
 def erase_duplicates_in_mirror(
@@ -39,8 +38,9 @@ def erase_duplicates_in_mirror(
     We keep 1) and delete 2)
     """
     for dirName, subdirList, fileList in os.walk(mirror_dir):
-        for fname in fileList:
-            if len(fname.split("-"))<=2 and len(fname.split("."))<=2 and fname[-6::]=="-0.txt":
+        for fname in glob.iglob(os.path.join(dirName,"*-0.txt")):
+            # fname must have exactly one "." and one "-"
+            if (len(fname.split("."))==2 and len(fname.split("-"))==2):
                 PGnumber = get_PG_number(fname)
                 possible_duplicate = os.path.join(mirror_dir,"cache","epub",PGnumber,"pg"+PGnumber+".txt.utf8")
                 if os.path.isfile(possible_duplicate):
@@ -69,20 +69,15 @@ def populate_raw_from_mirror(
 
     """
     for dirName, subdirList, fileList in os.walk(mirror_dir):
-        for fname in fileList:
-            # ignore strange files and file not in UTF8
-            # patterns to match are 12345-0.txt or pg12345.txt.utf8
+        # patterns to match are 12345-0.txt or pg12345.txt.utf8
+        for fname in glob.iglob(os.path.join(dirName,"[p123456789][g0123456789][0-9]*")):
+            # avoid files with more "." or "-" than expected
             if (len(fname.split("."))==2 and len(fname.split("-"))==2 and fname[-6::]=="-0.txt") or (len(fname.split("."))==3 and len(fname.split("-"))==1 and fname[-9::]==".txt.utf8"):
                 # get PG number
                 PGnumber = get_PG_number(fname)
 
-                
-                
                 source = os.path.join(dirName,fname)
                 target = os.path.join(raw_dir,"PG"+PGnumber+"_raw.txt")
                 
-                #if os.path.isfile(target):
-                #    print("# WARNING:",target,"already exists!")
-                #    print("# current source: ",source)
                 if (not os.path.isfile(target)) or overwrite:
                     subprocess.call(["ln","-f",source,target])
