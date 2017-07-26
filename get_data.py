@@ -103,8 +103,7 @@ if __name__=='__main__':
     # once in PG's site. We keep the newest one, see
     # erase_duplicates_in_mirror docstring.
     dups_list = list_duplicates_in_mirror(mirror_dir=args.mirror)
-    for x in dups_list:
-        print(x)
+    
     # Populate raw from mirror
     # ------------------------
     # We populate 'raw_dir' hardlinking to 

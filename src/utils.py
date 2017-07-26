@@ -46,8 +46,6 @@ def list_duplicates_in_mirror(
                 PGnumber = get_PG_number(fname)
                 possible_duplicate = os.path.join(mirror_dir,"cache","epub",PGnumber,"pg"+PGnumber+".txt.utf8")
                 if os.path.isfile(possible_duplicate):
-                    #print("# WARNING:","PG"+str(PGnumber),"found twice, cache version deleted.")
-                    #os.remove(possible_duplicate)
                     dups_list.append(possible_duplicate)
     return dups_list
 
@@ -81,9 +79,7 @@ def populate_raw_from_mirror(
             fname = matchpath.split("/")[-1]
             # check that file is not in dups_list
             if matchpath not in dups_list:
-                print("# i am considering %s"%fname)
                 # avoid files with more "." or "-" than expected
-                print(fname,len(fname.split(".")),"dots; ",len(fname.split("-")),"dashes")
                 if (len(fname.split("."))==2 and len(fname.split("-"))==2 and fname[-6::]=="-0.txt")\
                 or (len(fname.split("."))==3 and len(fname.split("-"))==1 and fname[-9::]==".txt.utf8"):
                     # get PG number
@@ -94,8 +90,7 @@ def populate_raw_from_mirror(
                     
                     if (not os.path.isfile(target)) or overwrite:
                         subprocess.call(["ln","-f",source,target])
-                else:
-                    print("but I failed!\n\n")
+                
             # if file was not in dupes list and we are not quiet
             elif not quiet:
                 print("# WARNING: file %s skipped due to duplication" % fname)
