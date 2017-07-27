@@ -90,7 +90,7 @@ if __name__=='__main__':
     #        [.-][t0][x.]t[x.]    *         [t8]
     sp_args = ["rsync", "-am%s"%vstring,\
                     "--include", "*/",\
-                    "--include", "%s[.-][t0][x.]t[x.]*[t8]"%args.pattern,\
+                    "--include", "[p123456789][g0123456789]%s[.-][t0][x.]t[x.]*[t8]"%args.pattern,\
                     "--exclude", "*",\
                     "aleph.gutenberg.org::gutenberg", args.mirror
                     ]    
