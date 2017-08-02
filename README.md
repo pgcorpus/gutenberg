@@ -18,8 +18,20 @@ python process_data.py
 This will fill in the `text/`, `tokens/` and `counts/` folders.
 
 
+## Pip
+
+Assuming you have python3, just run
+
+```
+pip install requirements_pip.txt
+```
+and you will get the required packages (see below)
+
+
+
 ## Conda Environment
 
+Alternatively, you can use a conda-environment to run the scripts.
 Install conda as described here https://www.digitalocean.com/community/tutorials/how-to-install-the-anaconda-python-distribution-on-ubuntu-16-04
 
 
