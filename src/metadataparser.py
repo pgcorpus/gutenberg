@@ -121,13 +121,15 @@ def getrdfdata(RDFFILES, update = False):
 
 
 
-    if not os.path.exists(RDFFILES) or update is True:
+    if (not os.path.exists(RDFFILES)) or (update is True):
         # _, _ = urllib.urlretrieve(RDFURL, RDFFILES) # python 2 syntax
         _, _ = urllib.request.urlretrieve(RDFURL, RDFFILES)
     with tarfile.open(RDFFILES) as archive:
         for tarinfo in archive:
-            yield ElementTree.parse(archive.extractfile(tarinfo))
-
+            try:
+                yield ElementTree.parse(archive.extractfile(tarinfo))
+            except:
+                pass
 
 def parsemetadata(ebook):
     """Parses an etext meta-data definition to extract fields.
