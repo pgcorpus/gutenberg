@@ -14,7 +14,7 @@ def process_book(
 	counts_dir=None,
 	tokenize_f=tokenize_text,
 	cleanup_f=strip_headers,
-        overwrite_all=False
+    overwrite_all=False
 	):
     """
     Process a book, from raw data to counts.

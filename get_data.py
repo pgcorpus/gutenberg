@@ -44,7 +44,7 @@ if __name__=='__main__':
 
     # update argument
     parser.add_argument("-k","--keep_rdf",
-        action="store_true",
+        action="store_false",
         help="If there is an RDF file in metadata dir, do not overwrite it.")
 
     # update argument
