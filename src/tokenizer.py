@@ -4,9 +4,12 @@
    You will get a list of tokens
 """
 
+import nltk
+nltk.data.path=["src/nltk_data"]
 
 from nltk.tokenize.treebank import TreebankWordTokenizer
 from nltk.tokenize import sent_tokenize
+
 
 def tokenize_text(text):
     '''Tokenize a string into a list of tokens.
