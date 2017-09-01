@@ -77,7 +77,7 @@ def process_book(
         # write tokens file
         target_file = os.path.join(tokens_dir,"PG%s_tokens.txt"%PG_number)
         with io.open(target_file,"w") as f:
-            f.write("\n".join(tokens))
+            f.write("\n".join(tokens)+"\n")
 
         # compute counts
         counts = Counter(tokens)
@@ -85,6 +85,6 @@ def process_book(
         # write counts file
         target_file = os.path.join(counts_dir,"PG%s_counts.txt"%PG_number)
         with io.open(target_file,"w") as f:
-            f.write("\n".join([w+"\t"+str(c) for w,c in counts.most_common()]))
+            f.write("\n".join([w+"\t"+str(c) for w,c in counts.most_common()])+"\n")
         
     
