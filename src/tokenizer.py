@@ -11,7 +11,7 @@ from nltk.tokenize.treebank import TreebankWordTokenizer
 from nltk.tokenize import sent_tokenize
 
 
-def tokenize_text(text):
+def tokenize_text(text, language="english"):
     '''Tokenize a string into a list of tokens.
     Use NLTK's Treebankwordtokenizer.
     Note that we first split into sentences using NLTK's sent_tokenize.
@@ -26,7 +26,7 @@ def tokenize_text(text):
     list_tokens = []
     
     ## split text into sentences
-    sentences=sent_tokenize(text)
+    sentences=sent_tokenize(text, language=language)
     
     ## define the tokenizer
     tokenizer = TreebankWordTokenizer()

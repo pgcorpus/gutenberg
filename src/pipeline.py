@@ -14,7 +14,8 @@ def process_book(
 	counts_dir=None,
 	tokenize_f=tokenize_text,
 	cleanup_f=strip_headers,
-    overwrite_all=False
+    overwrite_all=False,
+    language="english"
 	):
     """
     Process a book, from raw data to counts.
@@ -72,7 +73,7 @@ def process_book(
             f.write(clean)
 
         # compute tokens
-        tokens = tokenize_f(clean)
+        tokens = tokenize_f(clean, language=language)
    
         # write tokens file
         target_file = os.path.join(tokens_dir,"PG%s_tokens.txt"%PG_number)
