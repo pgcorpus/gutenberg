@@ -43,6 +43,11 @@ class meta_query(object):
         list_lang_set = sorted(list(set(list_lang_flat)))
         return list_lang_set
 
+    def get_lang_counts(self):
+        list_lang = [[k for k in h.strip("[]")[1:-1].replace("', '","_").split('_')] for h in self.df['language'].dropna()]
+        list_lang_flat = [item for sublist in list_lang for item in sublist]
+        return Counter(list_lang_flat)
+
     def get_subjects(self):
         list_subjects = [[k for k in h.strip("{}")[1:-1].replace("', '","_").split('_')] for h in self.df['subjects'].replace('set()',np.nan).dropna()]
         list_subjects_flat = [item for sublist in list_subjects for item in sublist]
@@ -77,6 +82,19 @@ class meta_query(object):
             s = self.df[self.df['subjects'].str.contains("'%s'"%(subject_sel)).replace(np.nan,False)]
         else:
             s = meta
+        self.df = s
+
+    def filter_year(self,y_sel,hmin=20):
+        '''
+        We filter all books, where 
+        - authoryearofbirth <= y_sel - hmin
+        - authoryearofdeath > y_sel
+        Note: 
+        - 1842 books with only authoryearofbirth 
+        - 847 books with only authoryearofdeath
+        - 13996 books missing both
+        '''
+        s = self.df[ (self.df['authoryearofbirth'] <= y_sel - hmin)&(self.df['authoryearofdeath']>y_sel)]
         self.df = s
 
 
