@@ -4,6 +4,30 @@ import shutil
 import subprocess
 import glob
 
+def get_langs_dict():
+    """
+    A dictionary mapping languages codes to full languages names
+    """
+    langs_dict = {
+        "cs": "czech",
+        "da": "danish",
+        "nl": "dutch",
+        "en": "english",
+        "et": "estonian",
+        "fi": "finnish",
+        "fr": "french",
+        "de": "german",
+        "el": "greek",
+        "it": "italian",
+        "no": "norwegian",
+        "pl": "polish",
+        "pt": "portuguese",
+        "sl": "slovene",
+        "es": "spanish",
+        "sv": "swedish"
+    }
+    return langs_dict
+
 def get_PG_number(string):
     """
     Simply gets the PG number from different possible text files.
