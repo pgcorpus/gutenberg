@@ -50,6 +50,12 @@ if __name__=='__main__':
         help="Quiet mode, do not print info, warnings, etc"
         )
 
+    # log file
+    parser.add_argument("-l","--log_file",
+        help="Path to log file",
+        default=".log",
+        type=str)
+
     # add arguments to parser
     args = parser.parse_args()
 
@@ -91,7 +97,8 @@ if __name__=='__main__':
                 text_dir=args.output_text,
                 tokens_dir=args.output_tokens,
                 counts_dir=args.output_counts,
-                language=language
+                language=language,
+                log_file=args.log_file
                 )
             pbooks += 1
             if not args.quiet:
