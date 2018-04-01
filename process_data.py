@@ -53,7 +53,7 @@ if __name__=='__main__':
     # log file
     parser.add_argument("-l","--log_file",
         help="Path to log file",
-        default="",
+        default=".log",
         type=str)
 
     # add arguments to parser
