@@ -5,8 +5,6 @@ from collections import Counter
 import io
 import os
 
-
-
 def process_book(
 	path_to_raw_file=None,
 	text_dir=None,
@@ -14,7 +12,9 @@ def process_book(
 	counts_dir=None,
 	tokenize_f=tokenize_text,
 	cleanup_f=strip_headers,
-    overwrite_all=False
+    overwrite_all=False,
+    language="english",
+    log_file=""
 	):
     """
     Process a book, from raw data to counts.
@@ -72,7 +72,7 @@ def process_book(
             f.write(clean)
 
         # compute tokens
-        tokens = tokenize_f(clean)
+        tokens = tokenize_f(clean, language=language)
    
         # write tokens file
         target_file = os.path.join(tokens_dir,"PG%s_tokens.txt"%PG_number)
@@ -86,5 +86,13 @@ def process_book(
         target_file = os.path.join(counts_dir,"PG%s_counts.txt"%PG_number)
         with io.open(target_file,"w") as f:
             f.write("\n".join([w+"\t"+str(c) for w,c in counts.most_common()])+"\n")
-        
-    
+
+        # write log info if log_file is not None
+        if log_file != "":
+            raw_nl = text.count("\n")
+            clean_nl = clean.count("\n")
+            L = len(tokens)
+            V = len(counts)
+            with io.open(log_file, "a") as f:
+               f.write("PG"+str(PG_number)+"\t"+language+"\t"+str(raw_nl)+"\t"+str(clean_nl)+"\t"+str(L)+"\t"+str(V)+"\n")
+                
