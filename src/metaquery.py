@@ -37,29 +37,6 @@ class meta_query(object):
         '''
         return self.df
 
-    def get_lang(self):
-        list_lang = [[k for k in h.strip("[]")[1:-1].replace("', '","_").split('_')] for h in self.df['language'].dropna()]
-        list_lang_flat = [item for sublist in list_lang for item in sublist]
-        list_lang_set = sorted(list(set(list_lang_flat)))
-        return list_lang_set
-
-    def get_lang_counts(self):
-        list_lang = [[k for k in h.strip("[]")[1:-1].replace("', '","_").split('_')] for h in self.df['language'].dropna()]
-        list_lang_flat = [item for sublist in list_lang for item in sublist]
-        return Counter(list_lang_flat)
-
-    def get_subjects(self):
-        list_subjects = [[k for k in h.strip("{}")[1:-1].replace("', '","_").split('_')] for h in self.df['subjects'].replace('set()',np.nan).dropna()]
-        list_subjects_flat = [item for sublist in list_subjects for item in sublist]
-        list_subjects_set = sorted(list(set(list_subjects_flat)))
-        return list_subjects_set
-
-    def get_subjects_counts(self):
-        list_subjects = [[k for k in h.strip("{}")[1:-1].replace("', '","_").split('_')] for h in self.df['subjects'].replace('set()',np.nan).dropna()]
-        list_subjects_flat = [item for sublist in list_subjects for item in sublist]
-        return Counter(list_subjects_flat)
-
-
     def filter_lang(self,lang_sel,how='only'):
         ## filter metadata for language
         ## how == 'only', books that only contain lang_sel
@@ -71,6 +48,29 @@ class meta_query(object):
         else:
             s = meta
         self.df = s
+
+    ### LANGUAGE
+    def get_lang(self):
+        list_lang = [[k for k in h.strip("[]")[1:-1].replace("', '","_").split('_')] for h in self.df['language'].dropna()]
+        list_lang_flat = [item for sublist in list_lang for item in sublist]
+        list_lang_set = sorted(list(set(list_lang_flat)))
+        return list_lang_set
+
+    def get_lang_counts(self):
+        list_lang = [[k for k in h.strip("[]")[1:-1].replace("', '","_").split('_')] for h in self.df['language'].dropna()]
+        list_lang_flat = [item for sublist in list_lang for item in sublist]
+        return Counter(list_lang_flat)
+    ### SUBJECTS
+    def get_subjects(self):
+        list_subjects = [[k for k in h.strip("{}")[1:-1].replace("', '","_").split('_')] for h in self.df['subjects'].replace('set()',np.nan).dropna()]
+        list_subjects_flat = [item for sublist in list_subjects for item in sublist]
+        list_subjects_set = sorted(list(set(list_subjects_flat)))
+        return list_subjects_set
+
+    def get_subjects_counts(self):
+        list_subjects = [[k for k in h.strip("{}")[1:-1].replace("', '","_").split('_')] for h in self.df['subjects'].replace('set()',np.nan).dropna()]
+        list_subjects_flat = [item for sublist in list_subjects for item in sublist]
+        return Counter(list_subjects_flat)
 
     def filter_subject(self,subject_sel,how='only'):
         ## filter metadata for subjects
@@ -84,6 +84,7 @@ class meta_query(object):
             s = meta
         self.df = s
 
+    ### TIME
     def filter_year(self,y_sel,hmin=20):
         '''
         We filter all books, where 
@@ -94,9 +95,25 @@ class meta_query(object):
         - 847 books with only authoryearofdeath
         - 13996 books missing both
         '''
-        s = self.df[ (self.df['authoryearofbirth'] <= y_sel - hmin)&(self.df['authoryearofdeath']>y_sel)]
+        if isinstance(y_sel,(list,np.ndarray)):
+            s = self.df[ (self.df['authoryearofbirth'] <= y_sel[1] - hmin)&(self.df['authoryearofdeath']>y_sel[0])]
+        else:
+            s = self.df[ (self.df['authoryearofbirth'] <= y_sel - hmin)&(self.df['authoryearofdeath']>y_sel)]
         self.df = s
 
+    ### AUTHOR
+    def filter_author(self,s_sel):
+        s = self.df[ self.df['author'].str.contains(s_sel,case=False).replace(np.nan,False)] 
+        self.df = s
+
+    ### Sort by the n most downloaded
+    def filter_downloads(self,n=-1):
+        ### keep only the n most downloaded
+        ### if n = -1, keep all
+        s = self.df.sort_values('downloads',ascending=False)
+        if n>0:
+            s=s.iloc[:n]
+        self.df = s
 
 
 
