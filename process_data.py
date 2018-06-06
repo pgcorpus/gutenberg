@@ -1,17 +1,25 @@
-import os,sys,argparse
+"""
+Process counts for all PG data.
+
+Written by
+M. Gerlach and F. Font-Clos
+
+"""
+import os
+from os.path import join
+import argparse
 import glob
 import ast
 import pandas as pd
 
-sys.path.append("src/")
-from pipeline import process_book
-from utils import get_langs_dict
+from src.pipeline import process_book
+from src.utils import get_langs_dict
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-        "Processing raw texts from Project Gutenberg:"\
+        "Processing raw texts from Project Gutenberg:"
         " i) removing headers,ii) tokenizing, and iii) counting words.")
     # raw folder
     parser.add_argument(
@@ -45,13 +53,15 @@ if __name__=='__main__':
         type=str)
 
     # quiet argument, to supress info
-    parser.add_argument("-q","--quiet",
+    parser.add_argument(
+        "-q", "--quiet",
         action="store_true",
         help="Quiet mode, do not print info, warnings, etc"
         )
 
     # log file
-    parser.add_argument("-l","--log_file",
+    parser.add_argument(
+        "-l", "--log_file",
         help="Path to log file",
         default=".log",
         type=str)
@@ -60,12 +70,15 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     # check whether the out-put directories exist
-    if os.path.isdir(args.output_text) == False:
-        raise ValueError("The directory for output of texts '%s' does not exist"%(args.output_text))
-    if os.path.isdir(args.output_tokens) == False:
-        raise ValueError("The directory for output of tokens '%s' does not exist"%(args.output_tokens))
-    if os.path.isdir(args.output_counts) == False:
-        raise ValueError("The directory for output of counts '%s' does not exist"%(args.output_counts))
+    if os.path.isdir(args.output_text) is False:
+        raise ValueError("The directory for output of texts '%s' "
+                         "does not exist" % (args.output_text))
+    if os.path.isdir(args.output_tokens) is False:
+        raise ValueError("The directory for output of tokens '%s' "
+                         "does not exist" % (args.output_tokens))
+    if os.path.isdir(args.output_counts) is False:
+        raise ValueError("The directory for output of counts '%s' "
+                         "does not exist" % (args.output_counts))
 
     # load metadata
     metadata = pd.read_csv("metadata/metadata.csv").set_index("id")
@@ -74,11 +87,11 @@ if __name__=='__main__':
     langs_dict = get_langs_dict()
 
     # loop over all books in the raw-folder
-    pbooks=0 
-    for filename in glob.iglob( os.path.join( args.raw,'PG%s_raw.txt'%(args.pattern) ) ):
+    pbooks = 0
+    for filename in glob.glob(join(args.raw, 'PG%s_raw.txt' % (args.pattern))):
         # The process_books function will fail very rarely, whne
-        # a file tagged as UTf-8 is not really UTF-8. We kust 
-        # skip those books.  
+        # a file tagged as UTf-8 is not really UTF-8. We kust
+        # skip those books.
         try:
             # get PG_id
             PG_id = filename.split("/")[-1].split("_")[0]
@@ -102,7 +115,7 @@ if __name__=='__main__':
                 )
             pbooks += 1
             if not args.quiet:
-                print("Processed %d books..."%pbooks,end="\r")
+                print("Processed %d books..." % pbooks, end="\r")
         except:
             if not args.quiet:
-                print("# WARNING: cannot process '%s'"%filename)
+                print("# WARNING: cannot process '%s'" % filename)

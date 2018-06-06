@@ -5,9 +5,8 @@ Extract metadata from Project Gutenberg RDF catalog into a Python dict.
 Based on https://bitbucket.org/c-w/gutenberg/
 """
 
-import os 
+import os
 import re
-import gzip
 import tarfile
 import urllib
 import urllib.request
@@ -19,11 +18,13 @@ try:
 except ImportError:
     import pickle
 
-
-# PICKLEFILE = '../data/metadata/md.pickle.gz'  # The Python dict produced by this module
-RDFFILES = '../data/metadata/rdf-files.tar.bz2'  # The catalog downloaded from Gutenberg
+# The Python dict produced by this module
+# PICKLEFILE = '../data/metadata/md.pickle.gz'
+# The catalog downloaded from Gutenberg
+RDFFILES = '../data/metadata/rdf-files.tar.bz2'
 META_FIELDS = ('id', 'author', 'title', 'downloads', 'formats', 'type', 'LCC',
-        'subjects', 'authoryearofbirth', 'authoryearofdeath', 'language')
+               'subjects', 'authoryearofbirth', 'authoryearofdeath', 'language'
+               )
 NS = dict(
         pg='http://www.gutenberg.org/2009/pgterms/',
         dc='http://purl.org/dc/terms/',
@@ -39,43 +40,58 @@ ETEXTRE = re.compile(r'''
     ''', re.IGNORECASE | re.VERBOSE)
 
 
-def make_df_metadata(path_xml = '../metadata/rdf-files.tar.bz2',\
-                     path_out = '../metadata/metadata.csv',
-                     update = False):
-    '''Main function to extract metadata.
-    We will save metainformation on all books in a csv-file (derived from pandas dataframe).
-    IN:
-    - path_xml, str, location of the rdf-file-- 
-        if it does not exist, we download it from http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.bz2
-    - path_out, str, where to save csv-file
-    - update, bool (default:False); download the latest rdf-file even if it already exists in path_xml
-    OUT:
-    - creates metadata.csv in path_out
-    '''
+def make_df_metadata(path_xml='../metadata/rdf-files.tar.bz2',
+                     path_out='../metadata/metadata.csv',
+                     update=False):
+    """
+    Write metadata in a csv.
 
-    ## parse the xml-file
-    md = readmetadata(path_xml, update = update)
-    ## convert into a pandas dataframe
+    We will save metainformation on all books in a csv-file
+    (derived from pandas dataframe).
+
+    Parameters
+    ----------
+    path_xml : str
+        Location of the rdf-file. If it does not exist, we download it from
+        http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.bz2
+    path_out : str
+        Where to save csv-file.
+    update : bool
+        (False) Download the latest rdf-file even if it already
+        exists in path_xml
+
+
+    Notes
+    -------
+    The function creates metadata.csv in path_out.
+
+
+    """
+    # parse the xml-file
+    md = readmetadata(path_xml, update=update)
+    # convert into a pandas dataframe
     df = pd.DataFrame.from_dict(md).T
-    ## which fields to keep
-    columns_select = ['id','title',\
-                'author','authoryearofbirth','authoryearofdeath',\
-                  'language','downloads',\
-                 'subjects','type']
+    # which fields to keep
+    columns_select = ['id', 'title', 'author', 'authoryearofbirth',
+                      'authoryearofdeath', 'language', 'downloads',
+                      'subjects', 'type'
+                      ]
     df = df[columns_select]
-    ## change id from id-->PGid
-    df['id']=df['id'].apply(lambda x: 'PG%s'%(x))
-    ##id as index
+    # change id from id-->PGid
+    df['id'] = df['id'].apply(lambda x: 'PG%s' % (x))
+    # id as index
     df = df.set_index('id')
     df.to_csv(path_out)
     return None
 
 
 def readmetadata(RDFFILES, update = False):
-    """Read/create cached metadata dump of Gutenberg catalog.
+    """
+    Read/create cached metadata dump of Gutenberg catalog.
 
-    Returns:
-        A dictionary with the following fields:
+    Returns
+    --------
+    A dictionary with the following fields:
 
         id (int): Gutenberg identifier of text
         author (str): Last name, First name
@@ -93,12 +109,13 @@ def readmetadata(RDFFILES, update = False):
 
     Fields that are not part of the metadata are set to None.
     http://www.gutenberg.org/wiki/Gutenberg:Help_on_Bibliographic_Record_Page
+
     """
     # if os.path.exists(PICKLEFILE):
     #     metadata = pickle.load(gzip.open(PICKLEFILE, 'rb'))
     # else:
     metadata = {}
-    for xml in getrdfdata(RDFFILES, update = update):
+    for xml in getrdfdata(RDFFILES, update=update):
         ebook = xml.find(r'{%(pg)s}ebook' % NS)
         if ebook is None:
             continue
@@ -109,17 +126,18 @@ def readmetadata(RDFFILES, update = False):
     return metadata
 
 
-def getrdfdata(RDFFILES, update = False):
-    """Downloads Project Gutenberg RDF catalog.
+def getrdfdata(RDFFILES, update=False):
+    """
+    Download Project Gutenberg RDF catalog.
 
-    Yields:
-        xml.etree.ElementTree.Element: An etext meta-data definition.
+    Yields
+    ------
+    xml.etree.ElementTree.Element
+        An etext meta-data definition.
 
     """
-    ### url of xml-metadata
+    # url of xml-metadata
     RDFURL = r'http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.bz2'
-
-
 
     if (not os.path.exists(RDFFILES)) or (update is True):
         # _, _ = urllib.urlretrieve(RDFURL, RDFFILES) # python 2 syntax
@@ -131,11 +149,15 @@ def getrdfdata(RDFFILES, update = False):
             except:
                 pass
 
-def parsemetadata(ebook):
-    """Parses an etext meta-data definition to extract fields.
 
-    Args:
-        ebook (xml.etree.ElementTree.Element): An ebook meta-data definition.
+def parsemetadata(ebook):
+    """
+    Parse an etext meta-data definition to extract fields.
+
+    Parameters
+    ----
+    ebook : xml.etree.ElementTree.Element
+        An ebook meta-data definition.
 
     """
     result = dict.fromkeys(META_FIELDS)
@@ -173,8 +195,8 @@ def parsemetadata(ebook):
             result['LCC'].add(value)
     # formats
     result['formats'] = {file.find('{%(dc)s}format//{%(rdf)s}value' % NS).text:
-            file.get('{%(rdf)s}about' % NS)
-            for file in ebook.findall('.//{%(pg)s}file' % NS)}
+                         file.get('{%(rdf)s}about' % NS)
+                         for file in ebook.findall('.//{%(pg)s}file' % NS)}
     # type
     booktype = ebook.find('.//{%(dc)s}type//{%(rdf)s}value' % NS)
     if booktype is not None:
@@ -190,7 +212,8 @@ def parsemetadata(ebook):
 
 
 def etextno(lines):
-    """Retrieves the id for an etext.
+    """
+    Retrieve the id for an etext.
 
     Args:
         lines (iter): The lines of the etext to search.
@@ -218,6 +241,7 @@ def etextno(lines):
         Traceback (most recent call last):
             ...
         ValueError: no etext-id found
+
     """
     for line in lines:
         match = ETEXTRE.search(line)

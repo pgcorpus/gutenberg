@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from cleanup import strip_headers
-from tokenizer import tokenize_text
+from .cleanup import strip_headers
+from .tokenizer import tokenize_text
 from collections import Counter
 import io
 import os
