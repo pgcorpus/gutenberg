@@ -13,7 +13,7 @@ import os
 import pandas as pd
 import numpy as np
 from collections import Counter
-
+import re
 
 class meta_query(object):
 
@@ -79,7 +79,7 @@ class meta_query(object):
         if how == 'only':
             s = self.df[self.df['subjects'] == "{'%s'}"%(subject_sel)]
         elif how =='any':
-            s = self.df[self.df['subjects'].str.contains("'%s'"%(subject_sel)).replace(np.nan,False)]
+            s = self.df[self.df['subjects'].str.contains("'%s'"%(re.escape(subject_sel))).replace(np.nan,False)]
         else:
             s = meta
         self.df = s
@@ -103,7 +103,7 @@ class meta_query(object):
 
     ### AUTHOR
     def filter_author(self,s_sel):
-        s = self.df[ self.df['author'].str.contains(s_sel,case=False).replace(np.nan,False)] 
+        s = self.df[ self.df['author'].str.contains(re.escape(s_sel),case=False).replace(np.nan,False)] 
         self.df = s
 
     ### Sort by the n most downloaded
