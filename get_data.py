@@ -1,17 +1,22 @@
+"""
+Project Gutenberg parsing with python 3.
+
+Written by
+M. Gerlach & F. Font-Clos
+
+"""
+from src.utils import populate_raw_from_mirror, list_duplicates_in_mirror
+from src.metadataparser import make_df_metadata
+
 import argparse
 import os
 import subprocess
- 
-import sys
-sys.path.append("src")
-from utils import populate_raw_from_mirror, list_duplicates_in_mirror
-from metadataparser import make_df_metadata 
 
-if __name__=='__main__':
+if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-        "Update local PG repository.\n\n"\
-        "This script will download all books currently not in your\n"\
+        "Update local PG repository.\n\n"
+        "This script will download all books currently not in your\n"
         "local copy of PG and get the latest version of the metadata.\n"
         )
     # mirror dir
@@ -43,24 +48,27 @@ if __name__=='__main__':
         type=str)
 
     # update argument
-    parser.add_argument("-k","--keep_rdf",
+    parser.add_argument(
+        "-k", "--keep_rdf",
         action="store_false",
         help="If there is an RDF file in metadata dir, do not overwrite it.")
 
     # update argument
-    parser.add_argument("-owr","--overwrite_raw",
+    parser.add_argument(
+        "-owr", "--overwrite_raw",
         action="store_true",
         help="Overwrite files in raw.")
 
     # quiet argument, to supress info
-    parser.add_argument("-q","--quiet",
+    parser.add_argument(
+        "-q", "--quiet",
         action="store_true",
         help="Quiet mode, do not print info, warnings, etc"
         )
 
     # create the parser
     args = parser.parse_args()
-    
+
     # check that all dirs exist
     if not os.path.isdir(args.mirror):
         raise ValueError("The specified mirror directory does not exist.")
@@ -77,9 +85,9 @@ if __name__=='__main__':
 
     # pass the -v flag to rsync if not in quiet mode
     if args.quiet:
-        vstring=""
+        vstring = ""
     else:
-        vstring="v"
+        vstring = "v"
 
     # Pattern to match the +  but not the - :
     #
@@ -88,33 +96,32 @@ if __name__=='__main__':
     # + 12345 -   0   .  t x                 t 
     #---------------------------------------------
     #        [.-][t0][x.]t[x.]    *         [t8]
-    sp_args = ["rsync", "-am%s"%vstring,\
-                    "--include", "*/",\
-                    "--include", "[p123456789][g0123456789]%s[.-][t0][x.]t[x.]*[t8]"%args.pattern,\
-                    "--exclude", "*",\
-                    "aleph.gutenberg.org::gutenberg", args.mirror
-                    ]    
+    sp_args = ["rsync", "-am%s" % vstring,
+               "--include", "*/",
+               "--include", "[p123456789][g0123456789]%s[.-][t0][x.]t[x.]*[t8]" % args.pattern,
+               "--exclude", "*",
+               "aleph.gutenberg.org::gutenberg", args.mirror
+               ]
     subprocess.call(sp_args)
 
- 
     # Get rid of duplicates
     # ---------------------
-    # A very small portion of books are stored more than 
+    # A very small portion of books are stored more than
     # once in PG's site. We keep the newest one, see
     # erase_duplicates_in_mirror docstring.
     dups_list = list_duplicates_in_mirror(mirror_dir=args.mirror)
-    
+
     # Populate raw from mirror
     # ------------------------
-    # We populate 'raw_dir' hardlinking to 
+    # We populate 'raw_dir' hardlinking to
     # the hidden 'mirror_dir'. Names are standarized
     # into PG12345_raw.txt form.
     populate_raw_from_mirror(
-        mirror_dir = args.mirror,
-        raw_dir = args.raw,
-        overwrite = args.overwrite_raw,
-        dups_list = dups_list,
-        quiet = args.quiet
+        mirror_dir=args.mirror,
+        raw_dir=args.raw,
+        overwrite=args.overwrite_raw,
+        dups_list=dups_list,
+        quiet=args.quiet
         )
 
     # Update metadata
@@ -122,7 +129,7 @@ if __name__=='__main__':
     # By default, update the whole metadata csv
     # file each time new data is downloaded.
     make_df_metadata(
-        path_xml = os.path.join(args.metadata,'rdf-files.tar.bz2'),
-        path_out = os.path.join(args.metadata,'metadata.csv'),
-        update = args.keep_rdf
+        path_xml=os.path.join(args.metadata, 'rdf-files.tar.bz2'),
+        path_out=os.path.join(args.metadata, 'metadata.csv'),
+        update=args.keep_rdf
         )

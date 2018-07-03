@@ -38,9 +38,17 @@ class meta_query(object):
         return self.df
 
     def filter_lang(self,lang_sel,how='only'):
-        ## filter metadata for language
-        ## how == 'only', books that only contain lang_sel
-        ## how == 'any', all books that contain lang_sel (and potentially others too)
+        """
+        Filter metadata by language.
+
+        Parameters
+        ----------
+        lang_sel : str
+            Two-letter language code.
+        how : str
+            'only' to select books that only contain lang_sel
+            'any' to select books that contain lang_sel and maybe other langs
+        """
         if how == 'only':
             s = self.df[self.df['language'] == "['%s']"%(lang_sel)]
         elif how =='any':

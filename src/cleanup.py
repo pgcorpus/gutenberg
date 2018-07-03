@@ -1,26 +1,28 @@
 # -*- coding: utf-8 -*-
-"""
-Taken from https://github.com/c-w/gutenberg/
-"""
+"""Taken from https://github.com/c-w/gutenberg/."""
+
 from __future__ import unicode_literals
 import os
 import io
 
-def cleanup(path,text_dir):
+
+def cleanup(path, text_dir):
     """
+    Remove headers from raw txt file.
+
     Parameters
     ----------
     path : string
         Path to the PG****_raw.txt file
-        
+
     """
     PG_number = path.split("/")[-1].split("_")[0][2:]
     with io.open(path) as f:
         text = f.read()
 
     clean = strip_headers(text)
-    source_file = os.path.join(text_dir,"PG%s_text.txt"%PG_number)
-    with io.open(source_file,"w") as f:
+    source_file = os.path.join(text_dir, "PG%s_text.txt" % PG_number)
+    with io.open(source_file, "w") as f:
         f.write(clean)
 
 
@@ -118,7 +120,9 @@ LEGALESE_END_MARKERS = frozenset(("SERVICE THAT CHARGES FOR DOWNLOAD",))
 
 
 def strip_headers(text):
-    """Remove lines that are part of the Project Gutenberg header or footer.
+    """
+    Remove lines that are part of the Project Gutenberg header or footer.
+
     Note: this function is a port of the C++ utility by Johannes Krugel. The
     original version of the code can be found at:
     http://www14.in.tum.de/spp1307/src/strip_headers.cpp
