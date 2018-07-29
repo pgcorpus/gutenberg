@@ -14,11 +14,24 @@ import pandas as pd
 import numpy as np
 from collections import Counter
 import re
+import glob
 
 class meta_query(object):
 
-    def __init__(self,path = '../metadata/metadata.csv'):
+    def __init__(self,path = '../metadata/metadata.csv', filter_exist = True):
+        '''filter_exist: Only keep entries in metadata for which we have the downloaded text.
+        '''
+
         self.df = pd.read_csv(path) ## the dataframe on which we apply filters
+        if filter_exist == True: ## filter the books for which we have the data
+            path_text = os.path.abspath(os.path.join(path,os.pardir,os.pardir,'data','text'))
+            list_files = []
+            for file in list(glob.glob( path_text+'/PG*_text.txt' )):
+                list_files += [file]
+            list_ids = sorted([ h.split('/')[-1].split('_text')[0] for h in list_files ])
+            df = self.df
+            df_new = df[df['id'].isin(list_ids)]
+            self.df = df_new
         self.df_original = self.df ## keep the original dataframe
 
     def reset(self):
