@@ -133,3 +133,27 @@ if __name__ == '__main__':
         path_out=os.path.join(args.metadata, 'metadata.csv'),
         update=args.keep_rdf
         )
+
+    # Create bookshelves
+    # ------------------
+    # Parse the bookshelves data from www.gutenberg.org/wiki/
+    # parse the data
+    sp_args = ["wget",
+               "--random-wait", "-r",
+               "-A", "*Bookshelf*",
+               "-p", "--no-parent",
+               "-e", "robots=off",
+               "-U", "mozilla",
+               "http://www.gutenberg.org/wiki/Category:Bookshelf"
+               ]
+    subprocess.call(sp_args)
+
+    # move it to metadata dir
+    sp_args = ["mv",
+               "www.gutenberg.org/wiki/*Bookshelf*",
+               "metadata/bookshelves/"]
+    subprocess.call(sp_args)
+
+    # cleanup
+    sp_args = ["rm", "-rf", "www.gutenberg.org"]
+    subprocess.call(sp_args)
