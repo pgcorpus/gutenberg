@@ -149,10 +149,8 @@ if __name__ == '__main__':
     subprocess.call(sp_args)
 
     # move it to metadata dir
-    sp_args = ["mv",
-               "www.gutenberg.org/wiki/*Bookshelf*",
-               "metadata/bookshelves/"]
-    subprocess.call(sp_args)
+    sp_args = "mv www.gutenberg.org/wiki/*Bookshelf* metadata/bookshelves/"
+    subprocess.call(sp_args, shell=True)
 
     # cleanup
     sp_args = ["rm", "-rf", "www.gutenberg.org"]
