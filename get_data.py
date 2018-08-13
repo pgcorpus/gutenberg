@@ -128,37 +128,36 @@ if __name__ == '__main__':
         quiet=args.quiet
         )
 
-    if False:
-        # Update metadata
-        # ---------------
-        # By default, update the whole metadata csv
-        # file each time new data is downloaded.
-        make_df_metadata(
-            path_xml=os.path.join(args.metadata, 'rdf-files.tar.bz2'),
-            path_out=os.path.join(args.metadata, 'metadata.csv'),
-            update=args.keep_rdf
-            )
+    # Update metadata
+    # ---------------
+    # By default, update the whole metadata csv
+    # file each time new data is downloaded.
+    make_df_metadata(
+        path_xml=os.path.join(args.metadata, 'rdf-files.tar.bz2'),
+        path_out=os.path.join(args.metadata, 'metadata.csv'),
+        update=args.keep_rdf
+        )
 
-        # Create bookshelves
-        # ------------------
-        # Scrap the bookshelves data from www.gutenberg.org/wiki/
-        sp_args = ["wget",
-                   "--random-wait", "-r",
-                   "-A", "*Bookshelf*",
-                   "-p", "--no-parent",
-                   "-e", "robots=off",
-                   "-U", "mozilla",
-                   "http://www.gutenberg.org/wiki/Category:Bookshelf"
-                   ]
-        subprocess.call(sp_args)
+    # Create bookshelves
+    # ------------------
+    # Scrap the bookshelves data from www.gutenberg.org/wiki/
+    sp_args = ["wget",
+               "--random-wait", "-r",
+               "-A", "*Bookshelf*",
+               "-p", "--no-parent",
+               "-e", "robots=off",
+               "-U", "mozilla",
+               "http://www.gutenberg.org/wiki/Category:Bookshelf"
+               ]
+    subprocess.call(sp_args)
 
-        # move it to metadata dir
-        sp_args = "mv www.gutenberg.org/wiki/*Bookshelf* metadata/bookshelves/"
-        subprocess.call(sp_args, shell=True)
+    # move it to metadata dir
+    sp_args = "mv www.gutenberg.org/wiki/*Bookshelf* metadata/bookshelves/"
+    subprocess.call(sp_args, shell=True)
 
-        # cleanup
-        sp_args = ["rm", "-rf", "www.gutenberg.org"]
-        subprocess.call(sp_args)
+    # cleanup
+    sp_args = ["rm", "-rf", "www.gutenberg.org"]
+    subprocess.call(sp_args)
 
     # parse the data
     BS_paths = glob.glob("metadata/bookshelves/*Bookshelf*")
