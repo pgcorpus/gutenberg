@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 """Functions to download, parse and filter Gutenberg's bookshelves."""
 
+import os
+import glob
+import numpy as np
+import pandas as pd
+import lxml.html
+import subprocess
+
 
 def get_bookshelves():
     """
