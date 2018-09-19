@@ -80,12 +80,18 @@ def parse_bookshelves():
 
 def filter_bookshelves(df, min_books=50, max_books=150):
     """Filter bookshelves by size, overlap and language."""
+    print(df.shape)
+
     # filter by size
     sdf = df.loc[:, (df.sum() > min_books) & (df.sum() <= max_books)].dropna(how="all")
+    print("after filtering by size", sdf.shape)
 
     # deal with overlaps
     sdf = sdf.loc[sdf.sum(axis=1) == 1].dropna(how="all", axis=1)
+    print("after dealing with overlaps", sdf.shape)
+
     sdf = sdf.drop("Esperanto_(Bookshelf)", axis=1).dropna(how="all")
+    print("after esperanto", sdf.shape)
 
     # filter by language
     from src.metaquery import meta_query
@@ -93,4 +99,5 @@ def filter_bookshelves(df, min_books=50, max_books=150):
     mq.filter_lang("en", how="only")
     allPGs = mq.df.set_index("id").index
     sdf = sdf.loc[np.intersect1d(sdf.index, allPGs)].dropna(how="all", axis=1)
+    print("after language", sdf.shape)
     return sdf

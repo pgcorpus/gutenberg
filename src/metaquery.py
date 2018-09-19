@@ -18,7 +18,7 @@ import glob
 
 class meta_query(object):
 
-    def __init__(self,path = '../metadata/metadata.csv', filter_exist = True):
+    def __init__(self, path='../metadata/metadata.csv', filter_exist=True):
         '''filter_exist: Only keep entries in metadata for which we have the downloaded text.
         '''
 
