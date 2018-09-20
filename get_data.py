@@ -146,7 +146,4 @@ if __name__ == '__main__':
     # -----------
     get_bookshelves()
     bookshelves_df = parse_bookshelves()
-    filtered_bookshleves_df = filter_bookshelves(bookshelves_df)
-
     bookshelves_df.to_pickle("metadata/bookshelves_raw.p")
-    filtered_bookshleves_df.to_pickle("metadata/bookshelves_clean.p")
