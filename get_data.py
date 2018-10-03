@@ -9,8 +9,6 @@ from src.utils import populate_raw_from_mirror, list_duplicates_in_mirror
 from src.metadataparser import make_df_metadata
 from src.bookshelves import get_bookshelves
 from src.bookshelves import parse_bookshelves
-from src.bookshelves import filter_bookshelves
-
 
 import argparse
 import os
@@ -146,4 +144,4 @@ if __name__ == '__main__':
     # -----------
     get_bookshelves()
     bookshelves_df = parse_bookshelves()
-    bookshelves_df.to_pickle("metadata/bookshelves_raw.p")
+    bookshelves_df.to_pickle("metadata/bookshelves.p")
