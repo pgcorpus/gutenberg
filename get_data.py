@@ -12,10 +12,6 @@ from src.bookshelves import parse_bookshelves
 
 import argparse
 import os
-import glob
-import numpy as np
-import pandas as pd
-import lxml.html
 import subprocess
 
 if __name__ == '__main__':

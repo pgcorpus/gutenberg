@@ -29,7 +29,7 @@ def get_bookshelves():
     subprocess.call(sp_args)
 
     # move it to metadata dir
-    sp_args = "mv www.gutenberg.org/wiki/*Bookshelf* metadata/bookshelves/"
+    sp_args = "mv www.gutenberg.org/wiki/*Bookshelf* metadata/bookshelves_html/"
     subprocess.call(sp_args, shell=True)
 
     # cleanup
@@ -46,7 +46,7 @@ def parse_bookshelves():
 
     """
     # parse the data
-    BS_paths = glob.glob("metadata/bookshelves/*Bookshelf*")
+    BS_paths = glob.glob("metadata/bookshelves_html/*Bookshelf*")
     BS = [path.split("/")[-1] for path in BS_paths]
 
     BS_dict = {}
