@@ -1,4 +1,36 @@
-# Project Gutenberg
+# Standardized Project Gutenberg Corpus
+Easily generate a local, up-to-date copy of the Standardized Project Gutenberg Corpus (SPGC).
+
+The Standardized Project Gutenberg Corpus was presented in 
+
+(Publication)[url to doi]
+M. Gerlach, F. Font-Clos
+2018
+
+There is a 'frozen' version of the SPGC corpus available for download at
+
+(Frozen data link)[url to data)
+
+You should use this version if you want to reproduce the results of the paper, since books are added daily to Project Gutenberg. If you want the latest, most recent version of the corpus, we recommend you use this repository to generate the corpus locally on your computer.
+
+
+## Installation
+Clone this repository
+
+```bash
+git clone https://github.com/pgcorpus/gutenberg.git
+```
+enter the newly created `gutenberg` directory
+
+```bash
+cd gutenberg
+```
+
+To install any missing dependencies, just run
+
+```bash
+pip install requirements.txt
+```
 
 ## Getting the data
 To get a local copy of the PG data, just run
@@ -18,11 +50,4 @@ python process_data.py
 This will fill in the `text/`, `tokens/` and `counts/` folders.
 
 
-## Dependencies
 
-Assuming you have python3, just run
-
-```bash
-pip install requirements.txt
-```
-and you will get all dependencies installed.
