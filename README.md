@@ -29,7 +29,7 @@ cd gutenberg
 To install any missing dependencies, just run
 
 ```bash
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Getting the data
