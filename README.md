@@ -7,11 +7,11 @@ The Standardized Project Gutenberg Corpus was presented in
 M. Gerlach, F. Font-Clos
 2018
 
-There is a 'frozen' version of the SPGC corpus tagged *SPGC-2018-07-18* avaialble for download here: 
+acompanied by a 'frozen' version of the corpus (SPGC-2018-07-18) as a Zenodo dataset: 
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2422560.svg)](https://doi.org/10.5281/zenodo.2422560)
 
-You should use this version if you want to reproduce the results of the paper, since books are added daily to Project Gutenberg. If you want the latest, most recent version of the corpus, we recommend you use this repository to generate the corpus locally on your computer.
+SPGC-2018-07-18 contains all books that were part of Project Gutenbergh (PG) as of Jul 18, 2018, matching exactly those used in the paper. Since then, a few more thousands books have been added to PG, so if you want to exactly reproduce the results of the paper, then you should use SPGC-2018-07-18. For **most other use cases**, however, you probably want the latest, most recent version of the corpus, in which case you should use this repository to **generate the corpus locally** on your computer.
 
 
 ## Installation
