@@ -3,9 +3,8 @@ Easily generate a local, up-to-date copy of the Standardized Project Gutenberg C
 
 The Standardized Project Gutenberg Corpus was presented in 
 
-(Publication)[url to doi]
-M. Gerlach, F. Font-Clos
-2018
+[A standardized Project Gutenberg corpus for statistical analysis of natural language and quantitative linguistics](https://arxiv.org/abs/1812.08092)  
+M. Gerlach, F. Font-Clos, arXiv:1812.08092, Dec 2018
 
 acompanied by a 'frozen' version of the corpus (SPGC-2018-07-18) as a Zenodo dataset: 
 
