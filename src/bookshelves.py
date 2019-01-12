@@ -53,7 +53,7 @@ def parse_bookshelves():
     for path in BS_paths:
         bs = path.split("/")[-1]
         BS_dict[bs] = []
-        with open(path, "r") as foo:
+        with open(path, "r", encoding="UTF-8") as foo:
             dom = lxml.html.fromstring(foo.read())
             # select the url in href for all a tags(links)
             for link in dom.xpath('//a/@href'):
