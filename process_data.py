@@ -57,7 +57,7 @@ if __name__ == '__main__':
         "-q", "--quiet",
         action="store_true",
         help="Quiet mode, do not print info, warnings, etc"
-        )
+    )
 
     # log file
     parser.add_argument(
@@ -112,10 +112,13 @@ if __name__ == '__main__':
                 counts_dir=args.output_counts,
                 language=language,
                 log_file=args.log_file
-                )
+            )
             pbooks += 1
             if not args.quiet:
                 print("Processed %d books..." % pbooks, end="\r")
+        except UnicodeDecodeError:
+            if not args.quiet:
+                print("# WARNING: cannot process '%s' (encoding not UTF-8)" % filename)
         except:
             if not args.quiet:
-                print("# WARNING: cannot process '%s'" % filename)
+                print("# WARNING: cannot process '%s' (unkown error)" % filename)

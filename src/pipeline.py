@@ -60,7 +60,7 @@ def process_book(
         (not os.path.isfile(os.path.join(tokens_dir,"PG%s_tokens.txt"%PG_number))) or \
         (not os.path.isfile(os.path.join(counts_dir,"PG%s_counts.txt"%PG_number))):
         # read raw file
-        with io.open(path_to_raw_file) as f:
+        with io.open(path_to_raw_file, encoding="UTF-8") as f:
             text = f.read()
 
         # clean it up
@@ -68,7 +68,7 @@ def process_book(
 
         # write text file
         target_file = os.path.join(text_dir,"PG%s_text.txt"%PG_number)
-        with io.open(target_file,"w") as f:
+        with io.open(target_file,"w", encoding="UTF-8") as f:
             f.write(clean)
 
         # compute tokens
@@ -76,7 +76,7 @@ def process_book(
    
         # write tokens file
         target_file = os.path.join(tokens_dir,"PG%s_tokens.txt"%PG_number)
-        with io.open(target_file,"w") as f:
+        with io.open(target_file,"w", encoding="UTF-8") as f:
             f.write("\n".join(tokens)+"\n")
 
         # compute counts
@@ -84,7 +84,7 @@ def process_book(
         
         # write counts file
         target_file = os.path.join(counts_dir,"PG%s_counts.txt"%PG_number)
-        with io.open(target_file,"w") as f:
+        with io.open(target_file,"w", encoding="UTF-8") as f:
             f.write("\n".join([w+"\t"+str(c) for w,c in counts.most_common()])+"\n")
 
         # write log info if log_file is not None
