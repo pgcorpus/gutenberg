@@ -117,5 +117,6 @@ if __name__ == '__main__':
             if not args.quiet:
                 print("Processed %d books..." % pbooks, end="\r")
         except:
+            raise RuntimeError
             if not args.quiet:
                 print("# WARNING: cannot process '%s'" % filename)
