@@ -116,7 +116,9 @@ if __name__ == '__main__':
             pbooks += 1
             if not args.quiet:
                 print("Processed %d books..." % pbooks, end="\r")
-        except:
-            raise RuntimeError("Failed when processing '%s'" % filename)
+        except UnicodeDecodeError:
             if not args.quiet:
-                print("# WARNING: cannot process '%s'" % filename)
+                print("# WARNING: cannot process '%s' (encoding not UTF-8)" % filename)
+        except:
+            if not args.quiet:
+                print("# WARNING: cannot process '%s' (unkown error)" % filename)
