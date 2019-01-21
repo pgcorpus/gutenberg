@@ -1,5 +1,6 @@
 import pytest
 from src.tokenizer import tokenize_text
+from src.tokenizer import filter_tokens
 
 
 def test_tokenize_text_simple():
@@ -72,3 +73,22 @@ def test_tokenize_text_nospaces():
         "これは、英語で書かれた多くの言語に翻訳された文です。"
     ]:
         assert True
+
+
+def test_filter_tokens():
+    """Test that we lower-case and filter tokens correctly"""
+    tokens = "this is a simple case".split(" ")
+    tokens_filt = "this is a simple case".split(" ")
+    assert tokens_filt == filter_tokens(tokens)
+
+    tokens = "This Must Be Lowercased".split(" ")
+    tokens_filt = "this must be lowercased".split(" ")
+    assert tokens_filt == filter_tokens(tokens)
+
+    tokens = "This one has 1some numbers9".split(" ")
+    tokens_filt = ["this", "one", "has"]
+    assert tokens_filt == filter_tokens(tokens)
+
+    tokens = "This one has ∫ome symbo|s".split(" ")
+    tokens_filt = ["this", "one", "has"]
+    assert tokens_filt == filter_tokens(tokens)
