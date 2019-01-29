@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import glob
 
+
 def get_langs_dict():
     """
     A dictionary mapping languages codes to full languages names
@@ -28,29 +29,31 @@ def get_langs_dict():
     }
     return langs_dict
 
+
 def get_PG_number(string):
     """
     Simply gets the PG number from different possible text files.
     Patterns are: 12345-0.txt or pg12345.txt.utf8
     """
-    # 12345-0.txt
-    if string.find("-0.txt")>-1:
-        PG_number = string.replace("-0.txt","")
+    PG_number = "notnumeric"
 
-    # pg12345.txt.utf8
-    elif string.find(".txt.utf8")>-1:
-            PG_number =  string.replace(".txt.utf8","").replace("pg","")
+    # case 12345-0.txt
+    if string.find("-0.txt") > -1:
+        PG_number = string.replace("-0.txt", "")
+
+    # case pg12345.txt.utf8
+    elif string.find(".txt.utf8") > -1:
+        PG_number = string.replace(".txt.utf8", "").replace("pg", "")
 
     if not PG_number.isnumeric():
-        print(string)
-        print(PG_number,"\n")
-        assert PG_number.isnumeric()
+        raise RuntimeError("Unrecognized PG number format")
+
     return PG_number
 
 
 def list_duplicates_in_mirror(
-    mirror_dir = None,
-    ):
+    mirror_dir=None,
+):
     """
     Look for duplicates in 'mirror_dir', and list them.
     Typical case is, there's two files corresponding to the
@@ -63,12 +66,13 @@ def list_duplicates_in_mirror(
     """
     dups_list = []
     for dirName, subdirList, fileList in os.walk(mirror_dir):
-        for matchpath in glob.iglob(os.path.join(dirName,"*-0.txt")):
+        for matchpath in glob.iglob(os.path.join(dirName, "*-0.txt")):
             fname = matchpath.split("/")[-1]
             # fname must have exactly one "." and one "-"
-            if (len(fname.split("."))==2 and len(fname.split("-"))==2):
+            if (len(fname.split(".")) == 2 and len(fname.split("-")) == 2):
                 PGnumber = get_PG_number(fname)
-                possible_duplicate = os.path.join(mirror_dir,"cache","epub",PGnumber,"pg"+PGnumber+".txt.utf8")
+                possible_duplicate = os.path.join(
+                    mirror_dir, "cache", "epub", PGnumber, "pg"+PGnumber+".txt.utf8")
                 if os.path.isfile(possible_duplicate):
                     dups_list.append(possible_duplicate)
     return dups_list
@@ -104,8 +108,8 @@ def populate_raw_from_mirror(mirror_dir=None,
             # check that file is not in dups_list
             if matchpath not in dups_list:
                 # avoid files with more "." or "-" than expected
-                if (len(fname.split("."))==2 and len(fname.split("-"))==2 and fname[-6::]=="-0.txt")\
-                or (len(fname.split("."))==3 and len(fname.split("-"))==1 and fname[-9::]==".txt.utf8"):
+                if (len(fname.split(".")) == 2 and len(fname.split("-")) == 2 and fname[-6::] == "-0.txt")\
+                        or (len(fname.split(".")) == 3 and len(fname.split("-")) == 1 and fname[-9::] == ".txt.utf8"):
                     # get PG number
                     PGnumber = get_PG_number(fname)
 
@@ -118,6 +122,3 @@ def populate_raw_from_mirror(mirror_dir=None,
             # if file was not in dupes list and we are not quiet
             elif not quiet:
                 print("# WARNING: file %s skipped due to duplication" % fname)
-
-
-
