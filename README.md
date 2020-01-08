@@ -16,6 +16,8 @@ For **most other use cases**, however, you probably want the latest, most recent
 
 
 ## Installation
+:warning: **Python 2.x is not supported** Please make sure your system runs Python 3.x. (https://pythonclock.org/).  
+
 Clone this repository
 
 ```bash
