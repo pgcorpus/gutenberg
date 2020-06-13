@@ -119,6 +119,9 @@ if __name__ == '__main__':
         except UnicodeDecodeError:
             if not args.quiet:
                 print("# WARNING: cannot process '%s' (encoding not UTF-8)" % filename)
-        except:
+        except KeyError:
+            if not args.quiet:
+                print("# WARNING: metadata for '%s' not found" % filename)
+        except Exception as e:
             if not args.quiet:
                 print("# WARNING: cannot process '%s' (unkown error)" % filename)
