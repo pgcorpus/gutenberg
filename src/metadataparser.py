@@ -26,10 +26,10 @@ META_FIELDS = ('id', 'author', 'title', 'downloads', 'formats', 'type', 'LCC',
                'subjects', 'authoryearofbirth', 'authoryearofdeath', 'language'
                )
 NS = dict(
-        pg='http://www.gutenberg.org/2009/pgterms/',
-        dc='http://purl.org/dc/terms/',
-        dcam='http://purl.org/dc/dcam/',
-        rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+    pg='http://www.gutenberg.org/2009/pgterms/',
+    dc='http://purl.org/dc/terms/',
+    dcam='http://purl.org/dc/dcam/',
+    rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 LINEBREAKRE = re.compile(u'[ \t]*[\n\r]+[ \t]*')
 ETEXTRE = re.compile(r'''
     e(text|b?ook)
@@ -85,7 +85,7 @@ def make_df_metadata(path_xml='../metadata/rdf-files.tar.bz2',
     return None
 
 
-def readmetadata(RDFFILES, update = False):
+def readmetadata(RDFFILES, update=False):
     """
     Read/create cached metadata dump of Gutenberg catalog.
 
@@ -136,12 +136,16 @@ def getrdfdata(RDFFILES, update=False):
         An etext meta-data definition.
 
     """
-    # url of xml-metadata
-    RDFURL = r'http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.bz2'
-
     if (not os.path.exists(RDFFILES)) or (update is True):
-        # _, _ = urllib.urlretrieve(RDFURL, RDFFILES) # python 2 syntax
-        _, _ = urllib.request.urlretrieve(RDFURL, RDFFILES)
+        # standard location of rdf files
+        try:
+            RDFURL = "http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.bz2"
+            _, _ = urllib.request.urlretrieve(RDFURL, RDFFILES)
+        # alternative location if standard fails
+        except:
+            RDFURL = "http://gutenberg.readingroo.ms/cache/generated/feeds/rdf-files.tar.bz2"
+            _, _ = urllib.request.urlretrieve(RDFURL, RDFFILES)
+
     with tarfile.open(RDFFILES) as archive:
         for tarinfo in archive:
             try:
@@ -180,7 +184,7 @@ def parsemetadata(ebook):
     title = ebook.find('.//{%(dc)s}title' % NS)
     if title is not None:
         result['title'] = fixsubtitles(
-                safeunicode(title.text, encoding='utf-8'))
+            safeunicode(title.text, encoding='utf-8'))
     # subject lists
     result['subjects'], result['LCC'] = set(), set()
     for subject in ebook.findall('.//{%(dc)s}subject' % NS):
@@ -272,5 +276,6 @@ def fixsubtitles(title):
 def safeunicode(arg, *args, **kwargs):
     """Coerce argument to unicode, if it's not already."""
     return arg if isinstance(arg, str) else unicode(arg, *args, **kwargs)
+
 
 __all__ = ['readmetadata']
