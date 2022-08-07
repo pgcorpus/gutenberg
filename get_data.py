@@ -13,6 +13,7 @@ from src.bookshelves import parse_bookshelves
 import argparse
 import os
 import subprocess
+import pickle
 
 if __name__ == '__main__':
 
@@ -138,6 +139,9 @@ if __name__ == '__main__':
 
     # Bookshelves
     # -----------
-    get_bookshelves()
-    bookshelves_df = parse_bookshelves()
-    bookshelves_df.to_pickle("metadata/bookshelves.p")
+    # Get bookshelves and their respective books and titles as dicts
+    BS_dict, BS_num_to_category_str_dict = parse_bookshelves()
+    with open("metadata/bookshelves_ebooks_dict.pkl", 'wb') as fp:
+        pickle.dump(BS_dict, fp)
+    with open("metadata/bookshelves_categories_dict.pkl", 'wb') as fp:
+        pickle.dump(BS_num_to_category_str_dict, fp)
