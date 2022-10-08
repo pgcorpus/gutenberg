@@ -1,22 +1,22 @@
 # Standardized Project Gutenberg Corpus
 Easily generate a local, up-to-date copy of the Standardized Project Gutenberg Corpus (SPGC).
 
-The Standardized Project Gutenberg Corpus was presented in 
+The Standardized Project Gutenberg Corpus was presented in
 
-[A standardized Project Gutenberg corpus for statistical analysis of natural language and quantitative linguistics](https://arxiv.org/abs/1812.08092)  
+[A standardized Project Gutenberg corpus for statistical analysis of natural language and quantitative linguistics](https://arxiv.org/abs/1812.08092)
 M. Gerlach, F. Font-Clos, arXiv:1812.08092, Dec 2018
 
-acompanied by a 'frozen' version of the corpus (SPGC-2018-07-18) as a Zenodo dataset: 
+accompanied by a 'frozen' version of the corpus (SPGC-2018-07-18) as a Zenodo data set:
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2422560.svg)](https://doi.org/10.5281/zenodo.2422560)
 
-SPGC-2018-07-18 contains the `tokens/` and `counts/` files of all books that were part of Project Gutenbergh (PG) as of Jul 18, 2018, matching exactly those used in the paper. Since then, a few more thousands books have been added to PG, so if you want to exactly reproduce the results of the paper, then you should use SPGC-2018-07-18.
+SPGC-2018-07-18 contains the `tokens/` and `counts/` files of all books that were part of Project Gutenberg (PG) as of Jul 18, 2018, matching exactly those used in the paper. Since then, a few more thousands books have been added to PG, so if you want to exactly reproduce the results of the paper, then you should use SPGC-2018-07-18.
 
 For **most other use cases**, however, you probably want the latest, most recent version of the corpus, in which case you should use this repository to **generate the corpus locally** on your computer. In particular, you will need to generate the corpus locally if you need to work with the original full text files in `raw/` and `text/`, since these are not included in the SPGC-2018-07-18 Zenodo dataset.
 
 
 ## Installation
-:warning: **Python 2.x is not supported** Please make sure your system runs Python 3.x. (https://pythonclock.org/).  
+:warning: **Python 2.x is not supported** Please make sure your system runs Python 3.x. (https://pythonclock.org/).
 
 Clone this repository
 

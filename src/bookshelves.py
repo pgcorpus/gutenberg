@@ -19,10 +19,10 @@ def get_bookshelves():
 
     """
     sp_args = ["wget",
-               "--random-wait", "-r", 
-               "-p", "--no-parent", 
-               "-e", "robots=off", 
-               "-U", "mozilla", 
+               "--random-wait", "-r",
+               "-p", "--no-parent",
+               "-e", "robots=off",
+               "-U", "mozilla",
                "https://www.gutenberg.org/ebooks/bookshelf/"
                ]
     subprocess.call(sp_args)
@@ -49,10 +49,10 @@ def parse_bookshelves():
     """
     Parse the bookshelves html files.
 
-    Builds up a dictionary of bookshelf_category:list(book_ids) and 
+    Builds up a dictionary of bookshelf_category:list(book_ids) and
     a dictionary of bookshelf_category:list(title_category)
     from the individual html files of each bs.
-    
+
     Prints the errors.
     """
     # parse the data

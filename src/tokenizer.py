@@ -13,10 +13,10 @@ from nltk.tokenize import sent_tokenize
 
 def tokenize_text(text, language="english"):
     '''Tokenize a string into a list of tokens.
-    Use NLTK's Treebankwordtokenizer.
+    Use NLTK's TreebankWordTokenizer.
     Note that we first split into sentences using NLTK's sent_tokenize.
     We additionally call a filtering function to remove un-wanted tokens.
-    
+
     IN:
     - text, str
     OUT:
@@ -24,10 +24,10 @@ def tokenize_text(text, language="english"):
     '''
     ## list of tokens
     list_tokens = []
-    
+
     ## split text into sentences
     sentences=sent_tokenize(text, language=language)
-    
+
     ## define the tokenizer
     tokenizer = TreebankWordTokenizer()
     ## loop over all sentences

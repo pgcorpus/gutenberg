@@ -31,24 +31,24 @@ def process_book(
 
     Overwrite policy
     ----------------
-    By default a book is processed in full except if all the 
+    By default a book is processed in full except if all the
     files already exist (raw,text,tokens and counts). The overwrite_all
-    keyword can cahnge this behaviour.
+    keyword can change this behaviour.
 
     Parameters
     ----------
     overwrite_all : bool
-        If set to True, everything is processed regargless of existing files.
+        If set to True, everything is processed regardless of existing files.
     """
     if text_dir is None:
         raise ValueError("You must specify a path to save the text files.")
-        
+
     if tokens_dir is None:
         raise ValueError("You must specify a path to save the tokens files.")
-        
+
     if counts_dir is None:
         raise ValueError("You must specify a path to save the counts files.")
-        
+
     if path_to_raw_file is None:
         raise ValueError("You must specify a path to the raw file to process.")
    
@@ -73,7 +73,7 @@ def process_book(
 
         # compute tokens
         tokens = tokenize_f(clean, language=language)
-   
+
         # write tokens file
         target_file = os.path.join(tokens_dir,"PG%s_tokens.txt"%PG_number)
         with io.open(target_file,"w", encoding="UTF-8") as f:
@@ -81,7 +81,7 @@ def process_book(
 
         # compute counts
         counts = Counter(tokens)
-        
+
         # write counts file
         target_file = os.path.join(counts_dir,"PG%s_counts.txt"%PG_number)
         with io.open(target_file,"w", encoding="UTF-8") as f:

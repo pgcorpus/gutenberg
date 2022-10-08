@@ -108,11 +108,11 @@ class meta_query(object):
     ### TIME
     def filter_year(self,y_sel,hmin=20):
         '''
-        We filter all books, where 
+        We filter all books, where
         - authoryearofbirth <= y_sel - hmin
         - authoryearofdeath > y_sel
-        Note: 
-        - 1842 books with only authoryearofbirth 
+        Note:
+        - 1842 books with only authoryearofbirth
         - 847 books with only authoryearofdeath
         - 13996 books missing both
         '''
@@ -124,7 +124,7 @@ class meta_query(object):
 
     ### AUTHOR
     def filter_author(self,s_sel):
-        s = self.df[ self.df['author'].str.contains(re.escape(s_sel),case=False).replace(np.nan,False)] 
+        s = self.df[ self.df['author'].str.contains(re.escape(s_sel),case=False).replace(np.nan,False)]
         self.df = s
 
     ### Sort by the n most downloaded

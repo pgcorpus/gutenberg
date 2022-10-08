@@ -62,7 +62,7 @@ if __name__ == '__main__':
         action="store_true",
         help="Overwrite files in raw.")
 
-    # quiet argument, to supress info
+    # quiet argument, to suppress info
     parser.add_argument(
         "-q", "--quiet",
         action="store_true",
@@ -117,7 +117,7 @@ if __name__ == '__main__':
     # Populate raw from mirror
     # ------------------------
     # We populate 'raw_dir' hardlinking to
-    # the hidden 'mirror_dir'. Names are standarized
+    # the hidden 'mirror_dir'. Names are standardized
     # into PG12345_raw.txt form.
     populate_raw_from_mirror(
         mirror_dir=args.mirror,

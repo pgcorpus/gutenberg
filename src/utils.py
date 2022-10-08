@@ -6,7 +6,7 @@ import glob
 
 def get_langs_dict():
     """
-    A dictionary mapping languages codes to full languages names
+    A dictionary mapping language codes to full language names
     """
     langs_dict = {
         "cs": "czech",
@@ -54,7 +54,7 @@ def list_duplicates_in_mirror(
     """
     Look for duplicates in 'mirror_dir', and list them.
     Typical case is, there's two files corresponding to the
-    same PG identificator:
+    same PG identifier:
 
     1) mirror/1/2/3/4/12345/12345-0.txt
     2) mirror/cache/epub/12345/pg12345.txt.utf-8
@@ -92,7 +92,7 @@ def populate_raw_from_mirror(mirror_dir=None,
     ----------
     overwrite : bool
         Whether to overwrite files in raw.
-    dups_list :  list of strings
+    dups_list : list of strings
         A list of duplicates produced by list_duplicates_in_mirror.
         Files in this list are not copied into raw.
 

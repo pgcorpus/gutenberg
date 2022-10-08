@@ -52,7 +52,7 @@ if __name__ == '__main__':
         default='*',
         type=str)
 
-    # quiet argument, to supress info
+    # quiet argument, to suppress info
     parser.add_argument(
         "-q", "--quiet",
         action="store_true",
@@ -89,15 +89,15 @@ if __name__ == '__main__':
     # loop over all books in the raw-folder
     pbooks = 0
     for filename in glob.glob(join(args.raw, 'PG%s_raw.txt' % (args.pattern))):
-        # The process_books function will fail very rarely, whne
-        # a file tagged as UTf-8 is not really UTF-8. We kust
+        # The process_books function will fail very rarely, when
+        # a file tagged as UTF-8 is not really UTF-8. We just
         # skip those books.
         try:
             # get PG_id
             PG_id = filename.split("/")[-1].split("_")[0]
 
             # get language from metadata
-            # default is english
+            # default is English
             language = "english"
             # language is a string representing a list of languages codes
             lang_id = ast.literal_eval(metadata.loc[PG_id, "language"])[0]
