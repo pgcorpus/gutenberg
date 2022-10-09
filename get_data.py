@@ -12,8 +12,11 @@ from src.bookshelves import parse_bookshelves
 
 import argparse
 import os
-import subprocess
 import pickle
+from subprocess import run, CalledProcessError
+
+SERVER = "aleph.gutenberg.org::gutenberg"
+SERVER_FALLBACK = "ftp.ibiblio.org::gutenberg"
 
 if __name__ == '__main__':
 
@@ -22,6 +25,13 @@ if __name__ == '__main__':
         "This script will download all books currently not in your\n"
         "local copy of PG and get the latest version of the metadata.\n"
         )
+
+    # server url
+    parser.add_argument(
+        "-s", "--server",
+        help="Server URL to be passed to rsync. Defaults to %s" % SERVER,
+        type=str)
+
     # mirror dir
     parser.add_argument(
         "-m", "--mirror",
@@ -92,20 +102,30 @@ if __name__ == '__main__':
     else:
         vstring = "v"
 
-    # Pattern to match the +  but not the - :
-    #
-    # + 12345 .   t   x  t .            utf  8
-    # - 12345 .   t   x  t .      utf8 .gzi  p
-    # + 12345 -   0   .  t x                 t 
-    #---------------------------------------------
-    #        [.-][t0][x.]t[x.]    *         [t8]
-    sp_args = ["rsync", "-am%s" % vstring,
-               "--include", "*/",
-               "--include", "[p123456789][g0123456789]%s[.-][t0][x.]t[x.]*[t8]" % args.pattern,
-               "--exclude", "*",
-               "aleph.gutenberg.org::gutenberg", args.mirror
-               ]
-    subprocess.call(sp_args)
+    def run_rsync(server):
+        # Pattern to match the +  but not the - :
+        #
+        # + 12345 .   t   x  t .            utf  8
+        # - 12345 .   t   x  t .      utf8 .gzi  p
+        # + 12345 -   0   .  t x                 t
+        #---------------------------------------------
+        #        [.-][t0][x.]t[x.]    *         [t8]
+        sp_args=["rsync", "-am%s" % vstring,
+            "--include", "*/",
+            "--include", "[p123456789][g0123456789]%s[.-][t0][x.]t[x.]*[t8]" % args.pattern,
+            "--exclude", "*",
+            server, args.mirror
+            ]
+        run(sp_args, check=True)
+
+    if args.server is None:
+        try:
+            run_rsync(SERVER)
+        except CalledProcessError:
+            print("Using fallback: %s" % SERVER_FALLBACK)
+            run_rsync(SERVER_FALLBACK)
+    else:
+        run_rsync(args.server)
 
     # Get rid of duplicates
     # ---------------------
