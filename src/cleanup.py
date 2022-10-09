@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Taken from https://github.com/c-w/gutenberg/."""
+"""Based on https://github.com/c-w/gutenberg/."""
 
 from __future__ import unicode_literals
 import os
-import io
+
+from src.utils import get_PG_number
 
 
 def cleanup(path, text_dir):
@@ -12,18 +13,14 @@ def cleanup(path, text_dir):
 
     Parameters
     ----------
-    path : string
+    path : pathlib.Path
         Path to the PG****_raw.txt file
 
     """
-    PG_number = path.split("/")[-1].split("_")[0][2:]
-    with io.open(path) as f:
-        text = f.read()
-
-    clean = strip_headers(text)
-    source_file = os.path.join(text_dir, "PG%s_text.txt" % PG_number)
-    with io.open(source_file, "w") as f:
-        f.write(clean)
+    text = path.read_text()
+    PG_number = get_PG_number(path)
+    source_file = text_dir.pathjoin("PG%s_text.txt" % PG_number)
+    source_file.write_text(strip_headers(text))
 
 
 ############

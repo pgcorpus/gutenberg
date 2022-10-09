@@ -11,9 +11,9 @@ from src.bookshelves import get_bookshelves
 from src.bookshelves import parse_bookshelves
 
 import argparse
-import os
 import subprocess
 import pickle
+from pathlib import Path
 
 if __name__ == '__main__':
 
@@ -27,21 +27,21 @@ if __name__ == '__main__':
         "-m", "--mirror",
         help="Path to the mirror folder that will be updated via rsync.",
         default='data/.mirror/',
-        type=str)
+        type=Path)
 
     # raw dir
     parser.add_argument(
         "-r", "--raw",
         help="Path to the raw folder.",
         default='data/raw/',
-        type=str)
+        type=Path)
 
     # metadata dir
     parser.add_argument(
         "-M", "--metadata",
         help="Path to the metadata folder.",
         default='metadata/',
-        type=str)
+        type=Path)
 
     # pattern matching
     parser.add_argument(
@@ -73,12 +73,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # check that all dirs exist
-    if not os.path.isdir(args.mirror):
-        raise ValueError("The specified mirror directory does not exist.")
-    if not os.path.isdir(args.raw):
-        raise ValueError("The specified raw directory does not exist.")
-    if not os.path.isdir(args.metadata):
-        raise ValueError("The specified metadata directory does not exist.")
+    if not args.mirror.is_dir():
+        raise NotADirectoryError("The specified mirror directory does not exist.")
+    if not args.raw.is_dir():
+        raise NotADirectoryError("The specified raw directory does not exist.")
+    if not args.metadata.is_dir():
+        raise NotADirectoryError("The specified metadata directory does not exist.")
 
     # Update the .mirror directory via rsync
     # --------------------------------------
@@ -132,8 +132,8 @@ if __name__ == '__main__':
     # By default, update the whole metadata csv
     # file each time new data is downloaded.
     make_df_metadata(
-        path_xml=os.path.join(args.metadata, 'rdf-files.tar.bz2'),
-        path_out=os.path.join(args.metadata, 'metadata.csv'),
+        path_xml=args.metadata / 'rdf-files.tar.bz2',
+        path_out=args.metadata / 'metadata.csv',
         update=args.keep_rdf
         )
 
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     # -----------
     # Get bookshelves and their respective books and titles as dicts
     BS_dict, BS_num_to_category_str_dict = parse_bookshelves()
-    with open("metadata/bookshelves_ebooks_dict.pkl", 'wb') as fp:
+    with Path("metadata/bookshelves_ebooks_dict.pkl").open('wb') as fp:
         pickle.dump(BS_dict, fp)
-    with open("metadata/bookshelves_categories_dict.pkl", 'wb') as fp:
+    with Path("metadata/bookshelves_categories_dict.pkl").open('wb') as fp:
         pickle.dump(BS_num_to_category_str_dict, fp)

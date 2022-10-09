@@ -9,12 +9,11 @@ Query metadata. Get id's of books with given
 
 """
 
-import os 
 import pandas as pd
 import numpy as np
 from collections import Counter
+from pathlib import Path
 import re
-import glob
 
 class meta_query(object):
 
@@ -24,11 +23,9 @@ class meta_query(object):
 
         self.df = pd.read_csv(path) ## the dataframe on which we apply filters
         if filter_exist == True: ## filter the books for which we have the data
-            path_text = os.path.abspath(os.path.join(path,os.pardir,os.pardir,'data','text'))
-            list_files = []
-            for file in list(glob.glob( path_text+'/PG*_text.txt' )):
-                list_files += [file]
-            list_ids = sorted([ h.split('/')[-1].split('_text')[0] for h in list_files ])
+            path_text = Path(path).absolute().parents[1] / 'data' / 'text'
+            list_ids = [file.name.split('_text')[0] for file in path_text.glob('PG*_text.txt')]
+
             df = self.df
             df_new = df[df['id'].isin(list_ids)]
             self.df = df_new

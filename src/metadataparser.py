@@ -5,13 +5,13 @@ Extract metadata from Project Gutenberg RDF catalog into a Python dict.
 Based on https://bitbucket.org/c-w/gutenberg/
 """
 
-import os
 import re
 import tarfile
 import urllib
 import urllib.request
 import pandas as pd
 
+from pathlib import Path
 import xml.etree.cElementTree as ElementTree
 try:
     import cPickle as pickle
@@ -19,9 +19,9 @@ except ImportError:
     import pickle
 
 # The Python dict produced by this module
-# PICKLEFILE = '../data/metadata/md.pickle.gz'
+# PICKLEFILE = path('../data/metadata/md.pickle.gz')
 # The catalog downloaded from Gutenberg
-RDFFILES = '../data/metadata/rdf-files.tar.bz2'
+RDFFILES = Path('../data/metadata/rdf-files.tar.bz2')
 META_FIELDS = ('id', 'author', 'title', 'downloads', 'formats', 'type', 'LCC',
                'subjects', 'authoryearofbirth', 'authoryearofdeath', 'language'
                )
@@ -40,8 +40,8 @@ ETEXTRE = re.compile(r'''
     ''', re.IGNORECASE | re.VERBOSE)
 
 
-def make_df_metadata(path_xml='../metadata/rdf-files.tar.bz2',
-                     path_out='../metadata/metadata.csv',
+def make_df_metadata(path_xml=Path('../metadata/rdf-files.tar.bz2'),
+                     path_out=Path('../metadata/metadata.csv'),
                      update=False):
     """
     Write metadata in a csv.
@@ -51,10 +51,10 @@ def make_df_metadata(path_xml='../metadata/rdf-files.tar.bz2',
 
     Parameters
     ----------
-    path_xml : str
+    path_xml : pathlib.Path
         Location of the rdf-file. If it does not exist, we download it from
         http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.bz2
-    path_out : str
+    path_out : pathlib.Path
         Where to save csv-file.
     update : bool
         (False) Download the latest rdf-file even if it already
@@ -111,7 +111,7 @@ def readmetadata(RDFFILES, update=False):
     http://www.gutenberg.org/wiki/Gutenberg:Help_on_Bibliographic_Record_Page
 
     """
-    # if os.path.exists(PICKLEFILE):
+    # if PICKLEFILE.exists():
     #     metadata = pickle.load(gzip.open(PICKLEFILE, 'rb'))
     # else:
     metadata = {}
@@ -136,7 +136,7 @@ def getrdfdata(RDFFILES, update=False):
         An etext meta-data definition.
 
     """
-    if (not os.path.exists(RDFFILES)) or (update is True):
+    if update is True or not RDFFILES.exists():
         # standard location of rdf files
         try:
             RDFURL = "http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.bz2"
@@ -167,7 +167,7 @@ def parsemetadata(ebook):
     result = dict.fromkeys(META_FIELDS)
     # get etext no
     about = ebook.get('{%(rdf)s}about' % NS)
-    result['id'] = int(os.path.basename(about))
+    result['id'] = int(Path(about).name)
     # author
     creator = ebook.find('.//{%(dc)s}creator' % NS)
     if creator is not None:
