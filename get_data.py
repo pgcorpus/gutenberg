@@ -68,6 +68,13 @@ if __name__ == '__main__':
         action="store_true",
         help="Quiet mode, do not print info, warnings, etc"
         )
+    
+    # rsync command
+    parser.add_argument(
+        "--rsync",
+        help="Specify rsync command if not `rsync`",
+        default='rsync',
+        type=str)
 
     # create the parser
     args = parser.parse_args()
@@ -99,10 +106,10 @@ if __name__ == '__main__':
     # + 12345 -   0   .  t x                 t 
     #---------------------------------------------
     #        [.-][t0][x.]t[x.]    *         [t8]
-    sp_args = ["rsync", "-am%s" % vstring,
-               "--include", "*/",
-               "--include", "[p123456789][g0123456789]%s[.-][t0][x.]t[x.]*[t8]" % args.pattern,
-               "--exclude", "*",
+    sp_args = [args.rsync, "-am%s" % vstring,
+               "--include=*/",
+               "--include=[p123456789][g0123456789]%s[.-][t0][x.]t[x.]*[t8]" % args.pattern,
+               "--exclude=*",
                "aleph.gutenberg.org::gutenberg", args.mirror
                ]
     subprocess.call(sp_args)

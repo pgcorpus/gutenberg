@@ -109,3 +109,8 @@ ENV/
 
 # VScode
 .vscode/
+
+# Windows dependencies / batch files
+cwRsync*/*
+*.exe
+*.bat
