@@ -14,7 +14,8 @@ def process_book(
 	cleanup_f=strip_headers,
     overwrite_all=False,
     language="english",
-    log_file=""
+    log_file="",
+    ignore=False
 	):
     """
     Process a book, from raw data to counts.
@@ -39,6 +40,9 @@ def process_book(
     ----------
     overwrite_all : bool
         If set to True, everything is processed regargless of existing files.
+    ignore : bool
+        If set to True, ignores UTF-8 decoding errors for "technically UTF-8" codecs
+        such as Windows-1252, enabling this shouldn't lead to the loss of any token
     """
     if text_dir is None:
         raise ValueError("You must specify a path to save the text files.")
@@ -60,7 +64,8 @@ def process_book(
         (not os.path.isfile(os.path.join(tokens_dir,"PG%s_tokens.txt"%PG_number))) or \
         (not os.path.isfile(os.path.join(counts_dir,"PG%s_counts.txt"%PG_number))):
         # read raw file
-        with io.open(path_to_raw_file, encoding="UTF-8") as f:
+        with io.open(path_to_raw_file, encoding="UTF-8", 
+                     errors="ignore" if ignore else "strict") as f:
             text = f.read()
 
         # clean it up
