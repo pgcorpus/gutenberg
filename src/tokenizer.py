@@ -3,9 +3,10 @@
    Call tokenize and pass a text (i.e. as a string).
    You will get a list of tokens
 """
+nltk_dir = "src/nltk_data"
 
 import nltk
-nltk.data.path=["src/nltk_data"]
+nltk.data.path=[nltk_dir]
 
 from nltk.tokenize.treebank import TreebankWordTokenizer
 from nltk.tokenize import sent_tokenize
@@ -42,7 +43,7 @@ def tokenize_text(text, language="english"):
 
 def filter_tokens(list_tokens):
     '''Remove un-wanted tokens from list of tokens
-    We only keep words that return TRUE for string.isaplha()
+    We only keep words that return TRUE for string.isalpha()
     We lowercase every token with string.lower()
     '''
     list_tokens_filter = [h.lower() for h in list_tokens if h.isalpha()]
