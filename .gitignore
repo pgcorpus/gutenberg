@@ -114,3 +114,6 @@ ENV/
 cwRsync*/*
 *.exe
 *.bat
+
+# nltk data directory
+src/nltk_data/**
