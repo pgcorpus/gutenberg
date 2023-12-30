@@ -13,6 +13,7 @@ import ast
 import pandas as pd
 import concurrent.futures
 import io
+import re
 
 from src.pipeline import process_book
 from src.utils import get_langs_dict, is_win32
@@ -70,6 +71,20 @@ if __name__ == '__main__':
         help="Path to log file",
         default=".log",
         type=str)
+    
+    # whether to ignore UTF-8 decoding errors
+    parser.add_argument(
+        "--ignore",
+        action="store_true",
+        help="Whether to ignore UTF-8 decoding errors")
+    
+    # multi-threading/processing choice
+    parser.add_argument(
+        "--pool",
+        help="Whether to use multi-processing or multi-threading",
+        default="process",
+        choices=["process", "thread"],
+        type=str)
 
     # add arguments to parser
     args = parser.parse_args()
@@ -101,9 +116,25 @@ if __name__ == '__main__':
 
     # loop over all books in the raw-folder
     pbooks = 0
-    
-    with concurrent.futures.ProcessPoolExecutor() as pool:
-        book_process_jobs = []
+
+    # find out which jobs were already done
+    re_pattern = args.pattern.replace('*', '.*') # wild card roughly equals .* in regex
+    pattern_text = re.compile('(PG%s)_text.txt' % (re_pattern))
+    pattern_tokens = re.compile('(PG%s)_tokens.txt' % (re_pattern))
+    pattern_counts = re.compile('(PG%s)_counts.txt' % (re_pattern))
+    exist_text = {pattern_text.fullmatch(f) for f in 
+                  glob.glob('PG%s_text.txt' % (args.pattern), root_dir=text_dir)}
+    exist_tokens = {pattern_tokens.fullmatch(f) for f in 
+                    glob.glob('PG%s_tokens.txt' % (args.pattern), root_dir=tokens_dir)}
+    exist_counts = {pattern_counts.fullmatch(f) for f in 
+                    glob.glob('PG%s_counts.txt' % (args.pattern), root_dir=counts_dir)}
+    exist_text = {f.group(1) for f in exist_text if f}
+    exist_tokens = {f.group(1) for f in exist_tokens if f}
+    exist_counts = {f.group(1) for f in exist_counts if f}
+    done_jobs = exist_text & exist_tokens & exist_counts
+
+    with eval("concurrent.futures.%sPoolExecutor()" % args.pool.capitalize()) as pool:
+        book_process_jobs = dict()
         for filename in glob.glob(join(raw_dir, 'PG%s_raw.txt' % (args.pattern))):
             # The process_books function will fail very rarely, whne
             # a file tagged as UTf-8 is not really UTF-8. We kust
@@ -111,31 +142,46 @@ if __name__ == '__main__':
             # get PG_id
             PG_id = os.path.split(filename)[-1].split("_")[0]
 
-            # get language from metadata
-            # default is english
-            language = "english"
-            # language is a string representing a list of languages codes
-            lang_id = ast.literal_eval(metadata.loc[PG_id, "language"])[0]
-            if lang_id in langs_dict.keys():
-                language = langs_dict[lang_id]
+            if PG_id not in done_jobs:
+                # get language from metadata
+                # default is english
+                language = "english"
+                try:
+                    # language is a string representing a list of languages codes
+                    lang_id = ast.literal_eval(metadata.loc[PG_id, "language"])[0]
+                    if lang_id in langs_dict.keys():
+                        language = langs_dict[lang_id]
+                except KeyError:
+                    if not args.quiet:
+                        msg = "# WARNING: metadata for '%s' not found" % filename
+                        print(msg)
+                        if args.log_file:
+                            with io.open(args.log_file, "a") as f:
+                                f.write(msg + '\n')
 
-            # process the book: strip headers, tokenize, count
-            book_process_jobs.append(pool.submit(
-                process_book,
-                path_to_raw_file=filename,
-                text_dir=text_dir,
-                tokens_dir=tokens_dir,
-                counts_dir=counts_dir,
-                language=language,
-                log_file=args.log_file))
-            
+                # process the book: strip headers, tokenize, count
+                book_process_jobs[
+                    pool.submit(
+                        process_book,
+                        path_to_raw_file=filename,
+                        text_dir=text_dir,
+                        tokens_dir=tokens_dir,
+                        counts_dir=counts_dir,
+                        overwrite_all=True,
+                        language=language,
+                        log_file=args.log_file,
+                        ignore=args.ignore)
+                ] = PG_id
+        
             pbooks += 1
             if not args.quiet:
                 print("%d book processing jobs started..." % pbooks, end="\r")
         
-        print()
+        print("\n%d book processing jobs created in total" % len(book_process_jobs))
+
         pbooks = 0
         for job in concurrent.futures.as_completed(book_process_jobs):
+            PG_id = book_process_jobs[job]
             if args.log_file:
                 try:
                     log_content = job.result()
@@ -143,18 +189,15 @@ if __name__ == '__main__':
                         f.write(log_content)
                 except UnicodeDecodeError:
                     if not args.quiet:
-                        print("# WARNING: cannot process '%s' (encoding not UTF-8)" % filename)
-                except KeyError:
-                    if not args.quiet:
-                        print("# WARNING: metadata for '%s' not found" % filename)
+                        print("# WARNING: cannot process '%s' (encoding not UTF-8)" % PG_id)
                 except LookupError as e:
                     print("Very likely that an NLTK resource needs to be downloaded")
                     raise e
                 except Exception as e:
                     if not args.quiet:
-                        print("# WARNING: cannot process '%s' (unkown error)" % filename)
+                        print("# WARNING: cannot process '%s' (unkown error)" % PG_id)
                         raise e
             pbooks += 1
             if not args.quiet:
                 print("Processed %d books..." % pbooks, end="\r")
-            
+        print("\ndone")
