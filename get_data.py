@@ -5,7 +5,7 @@ Written by
 M. Gerlach & F. Font-Clos
 
 """
-from src.utils import populate_raw_from_mirror, list_duplicates_in_mirror
+from src.utils import populate_raw_from_mirror, list_duplicates_in_mirror, remove_empty_dirs, is_win32
 from src.metadataparser import make_df_metadata
 from src.bookshelves import get_bookshelves
 from src.bookshelves import parse_bookshelves
@@ -22,6 +22,7 @@ if __name__ == '__main__':
         "This script will download all books currently not in your\n"
         "local copy of PG and get the latest version of the metadata.\n"
         )
+    
     # mirror dir
     parser.add_argument(
         "-m", "--mirror",
@@ -69,22 +70,48 @@ if __name__ == '__main__':
         help="Quiet mode, do not print info, warnings, etc"
         )
     
+    # clean argument, to supress info
+    parser.add_argument(
+        "-c", "--clean",
+        action="store_true",
+        help="Clean the mirror directory to remove any empty folders"
+        )
+    
     # rsync command
     parser.add_argument(
         "--rsync",
-        help="Specify rsync command if not `rsync`",
+        help="Specify an alternative rsync command",
         default='rsync',
+        type=str)
+    
+    # rsync command
+    parser.add_argument(
+        "--procedures",
+        help='''Procedures to go through, defaults to \"pdlmb\": 
+        - [p]ull mirror files
+        - find [d]uplicates
+        - hard [l]ink from mirror to raw
+        - get [m]etadata
+        - get [b]ookshelf information''',
+        default='pdlmb',
         type=str)
 
     # create the parser
     args = parser.parse_args()
+    mirror_dir, raw_dir, metadata_dir = args.mirror, args.raw, args.metadata
+    
+    if is_win32:
+        print("Windows detected, please make sure wget is installed and added to PATH")
+        mirror_dir = mirror_dir.replace('/', '\\')
+        raw_dir = raw_dir.replace('/', '\\')
+        metadata_dir = metadata_dir.replace('/', '\\')
 
     # check that all dirs exist
-    if not os.path.isdir(args.mirror):
+    if not os.path.isdir(mirror_dir):
         raise ValueError("The specified mirror directory does not exist.")
-    if not os.path.isdir(args.raw):
+    if not os.path.isdir(raw_dir):
         raise ValueError("The specified raw directory does not exist.")
-    if not os.path.isdir(args.metadata):
+    if not os.path.isdir(metadata_dir):
         raise ValueError("The specified metadata directory does not exist.")
 
     # Update the .mirror directory via rsync
@@ -106,49 +133,58 @@ if __name__ == '__main__':
     # + 12345 -   0   .  t x                 t 
     #---------------------------------------------
     #        [.-][t0][x.]t[x.]    *         [t8]
-    sp_args = [args.rsync, "-am%s" % vstring,
-               "--include=*/",
-               "--include=[p123456789][g0123456789]%s[.-][t0][x.]t[x.]*[t8]" % args.pattern,
-               "--exclude=*",
-               "aleph.gutenberg.org::gutenberg", args.mirror
-               ]
-    subprocess.call(sp_args)
+    includes = ["*/", "[p123456789][g0123456789]%s[.-][t0][x.]t[x.]*[t8]" % args.pattern]
+    excludes = ["*"]
+    sp_args = ' '.join([args.rsync, "-am%s" % vstring] + ["--include=\"%s\"" % i for i in includes] + \
+        ["--exclude=\"%s\"" % i for i in excludes] + ["aleph.gutenberg.org::gutenberg", mirror_dir])
+    
+    # If specified, remove any empty directory that might be caused by bugs or wrong patterns in rsync
+    if args.clean:
+        remove_empty_dirs(mirror_dir, args.quiet)
+
+    # Subprocess call (default arguments):
+    # rsync -amv --include="*/" --include="[p123456789][g0123456789]*[.-][t0][x.]t[x.]*[t8]" --exclude="*" aleph.gutenberg.org::gutenberg data/.mirror/
+    if 'p' in args.procedures:
+        subprocess.call(sp_args) 
 
     # Get rid of duplicates
     # ---------------------
     # A very small portion of books are stored more than
     # once in PG's site. We keep the newest one, see
     # erase_duplicates_in_mirror docstring.
-    dups_list = list_duplicates_in_mirror(mirror_dir=args.mirror)
+    dups_list = list_duplicates_in_mirror(mirror_dir=mirror_dir) if 'd' in args.procedures else []
 
     # Populate raw from mirror
     # ------------------------
     # We populate 'raw_dir' hardlinking to
     # the hidden 'mirror_dir'. Names are standarized
     # into PG12345_raw.txt form.
-    populate_raw_from_mirror(
-        mirror_dir=args.mirror,
-        raw_dir=args.raw,
-        overwrite=args.overwrite_raw,
-        dups_list=dups_list,
-        quiet=args.quiet
+    if 'l' in args.procedures:
+        populate_raw_from_mirror(
+            mirror_dir=mirror_dir,
+            raw_dir=raw_dir,
+            overwrite=args.overwrite_raw,
+            dups_list=dups_list,
+            quiet=args.quiet
         )
 
     # Update metadata
     # ---------------
     # By default, update the whole metadata csv
     # file each time new data is downloaded.
-    make_df_metadata(
-        path_xml=os.path.join(args.metadata, 'rdf-files.tar.bz2'),
-        path_out=os.path.join(args.metadata, 'metadata.csv'),
-        update=args.keep_rdf
+    if 'm' in args.procedures:
+        make_df_metadata(
+            path_xml=os.path.join(metadata_dir, 'rdf-files.tar.bz2'),
+            path_out=os.path.join(metadata_dir, 'metadata.csv'),
+            update=args.keep_rdf
         )
 
     # Bookshelves
     # -----------
     # Get bookshelves and their respective books and titles as dicts
-    BS_dict, BS_num_to_category_str_dict = parse_bookshelves()
-    with open("metadata/bookshelves_ebooks_dict.pkl", 'wb') as fp:
-        pickle.dump(BS_dict, fp)
-    with open("metadata/bookshelves_categories_dict.pkl", 'wb') as fp:
-        pickle.dump(BS_num_to_category_str_dict, fp)
+    if 'b' in args.procedures:
+        BS_dict, BS_num_to_category_str_dict = parse_bookshelves()
+        with open("metadata/bookshelves_ebooks_dict.pkl", 'wb') as fp:
+            pickle.dump(BS_dict, fp)
+        with open("metadata/bookshelves_categories_dict.pkl", 'wb') as fp:
+            pickle.dump(BS_num_to_category_str_dict, fp)
