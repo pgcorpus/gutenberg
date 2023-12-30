@@ -16,7 +16,7 @@ def cleanup(path, text_dir):
         Path to the PG****_raw.txt file
 
     """
-    PG_number = path.split("/")[-1].split("_")[0][2:]
+    PG_number = os.path.split(path)[-1].split("_")[0][2:]
     with io.open(path) as f:
         text = f.read()
 
