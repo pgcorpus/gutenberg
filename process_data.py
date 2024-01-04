@@ -16,7 +16,7 @@ import io
 import re
 
 from src.pipeline import process_book
-from src.utils import get_langs_dict, is_win32
+from src.utils import get_langs_dict, check_not_empty, is_win32
 
 
 if __name__ == '__main__':
@@ -71,6 +71,12 @@ if __name__ == '__main__':
         help="Path to log file",
         default=".log",
         type=str)
+    
+    # check if existing files are empty
+    parser.add_argument(
+        "-c", "--check_empty",
+        action="store_true",
+        help="Whether to check if existing files are empty")
     
     # whether to ignore UTF-8 decoding errors
     parser.add_argument(
@@ -128,10 +134,36 @@ if __name__ == '__main__':
                     glob.glob('PG%s_tokens.txt' % (args.pattern), root_dir=tokens_dir)}
     exist_counts = {pattern_counts.fullmatch(f) for f in 
                     glob.glob('PG%s_counts.txt' % (args.pattern), root_dir=counts_dir)}
+    
     exist_text = {f.group(1) for f in exist_text if f}
     exist_tokens = {f.group(1) for f in exist_tokens if f}
     exist_counts = {f.group(1) for f in exist_counts if f}
     done_jobs = exist_text & exist_tokens & exist_counts
+    del exist_text, exist_tokens, exist_counts
+
+    if args.check_empty:
+        with eval("concurrent.futures.%sPoolExecutor()" % args.pool.capitalize()) as pool:
+            tmp0 = [(os.path.join(text_dir, PG_id) + "_text.txt", PG_id) for PG_id in done_jobs]
+            tmp1 = [(os.path.join(tokens_dir, PG_id) + "_tokens.txt", PG_id) for PG_id in done_jobs]
+            tmp2 = [(os.path.join(counts_dir, PG_id) + "_counts.txt", PG_id) for PG_id in done_jobs]
+            validate_jobs0 = {pool.submit(check_not_empty, f) : PG_id for f, PG_id in tmp0}
+            validate_jobs1 = {pool.submit(check_not_empty, f) : PG_id for f, PG_id in tmp1}
+            validate_jobs2 = {pool.submit(check_not_empty, f) : PG_id for f, PG_id in tmp2}
+            validation_results = {PG_id : 0 for PG_id in done_jobs}
+            if not args.quiet:
+                print("%d books to check for completion (3 passes required)" % len(done_jobs))
+            for job_type in [validate_jobs0, validate_jobs1, validate_jobs2]:
+                pbooks = 0
+                for job in concurrent.futures.as_completed(job_type):
+                    if job.result():
+                        validation_results[job_type[job]] += 1
+                    pbooks += 1
+                    if (not args.quiet) and (pbooks % 100 == 0):
+                        print("%6d books checked for completion" % pbooks, end="\r")
+            done_jobs = {PG_id for PG_id in validation_results if validation_results[PG_id] == 3}
+            if not args.quiet:
+                print("%d books seem to be processed but have empty file(s)" %(len(validation_results) - len(done_jobs)))
+            del tmp0, tmp1, tmp2, validate_jobs0, validate_jobs1, validate_jobs2, validation_results
 
     with eval("concurrent.futures.%sPoolExecutor()" % args.pool.capitalize()) as pool:
         book_process_jobs = dict()

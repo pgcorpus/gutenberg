@@ -117,3 +117,9 @@ cwRsync*/*
 
 # nltk data directory
 src/nltk_data/**
+
+# Wget temporary directory
+*gutenberg*/
+
+# Jupyter notebooks for processing data
+*.ipynb
