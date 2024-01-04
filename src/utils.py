@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 import glob
+import io
 from sys import platform
 
 # add support for windows
@@ -162,4 +163,6 @@ def remove_empty_dirs(path: str, quiet: bool=False):
                 if not quiet:
                     print(f"Removed empty directory: {subdir_path}")
 
-
+def check_not_empty(fname: str) -> bool:
+    with io.open(fname, errors="ignore", encoding="utf-8") as f:
+        return bool(f.read().strip())
