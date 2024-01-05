@@ -21,6 +21,8 @@ For **most other use cases**, however, you probably want the latest, most recent
   - bugs & typos
 - Parallelised text processing
 - Additional arguments for customization
+> **Note:**
+> this fork has only been tested on Windows (yet), but should work on other platforms unless the original code doesn't work in the first place?
 
 ## Installation
 :warning: **Python 2.x is not supported** Please make sure your system runs Python 3.x. (https://pythonclock.org/).  
@@ -105,8 +107,6 @@ options:
 **How to use `process_data.py` with customisation options:**
 ```
 python process_data.py --help
-[nltk_data] Downloading package punkt to src/nltk_data...
-[nltk_data]   Package punkt is already up-to-date!
 usage: Processing raw texts from Project Gutenberg: i) removing headers,ii) tokenizing, and iii) counting words.
        [-h] [-r RAW] [-ote OUTPUT_TEXT] [-oto OUTPUT_TOKENS] [-oco OUTPUT_COUNTS] [-p PATTERN] [-q] [-l LOG_FILE] [-c] [--ignore]
        [--pool {process,thread}]
