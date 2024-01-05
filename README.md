@@ -20,7 +20,7 @@ For **most other use cases**, however, you probably want the latest, most recent
   - oversights (bookshelves info are never fetched, nltk missing download, utf-8 decoding error in ebook header, etc.)
   - bugs & typos
 - Parallelised text processing
-- Additional arguments for customization
+- Additional arguments for customisation (see [**Usage**](#usage) section)
 > **Note:**
 > this fork has only been tested on Windows (yet), but should work on other platforms unless the original code doesn't work in the first place?
 
@@ -52,7 +52,7 @@ python get_data.py
 This will download a copy of all UTF-8 books in PG and will create a csv file with metadata (e.g. author, title, year, ...).
 
 Notice that if you already have some of the data, the program will only download those you are missing (we use `rsync` for this). It is hence easy to update the dataset periodically to keep it up-to-date by just running `get_data.py`.
-> For Windows users, see the [**Usage**](#usage) section
+> For Windows users, see [**Usage**](#usage) section
 
 ## Processing the data
 To process all the data in the `raw/` directory, run
@@ -60,7 +60,7 @@ To process all the data in the `raw/` directory, run
 python process_data.py
 ```
 This will fill in the `text/`, `tokens/` and `counts/` folders.
-> To avoid losing ebooks that are actually UTF-8 but mistakenly removed in the original code, see the [**Usage**](#usage) section
+> To avoid losing ebooks that are actually UTF-8 but mistakenly removed in the original code, see [**Usage**](#usage) section
 
 ## Usage
 **Recommended usage for `get_data.py` (Windows user):** 
