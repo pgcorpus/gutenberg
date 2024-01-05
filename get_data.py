@@ -92,8 +92,9 @@ if __name__ == '__main__':
         - find [d]uplicates
         - hard [l]ink from mirror to raw
         - get [m]etadata
-        - get [b]ookshelf information''',
-        default='pdlmb',
+        - get [b]ookshelf information
+        - [s]tore bookshelf information''',
+        default='pdlmbs',
         type=str)
 
     # create the parser
@@ -184,6 +185,8 @@ if __name__ == '__main__':
     # Get bookshelves and their respective books and titles as dicts
     if 'b' in args.procedures:
         get_bookshelves()
+    
+    if 's' in args.procedures:
         BS_dict, BS_num_to_category_str_dict = parse_bookshelves()
         with open("metadata/bookshelves_ebooks_dict.pkl", 'wb') as fp:
             pickle.dump(BS_dict, fp)
