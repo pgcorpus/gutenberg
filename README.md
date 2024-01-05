@@ -16,13 +16,21 @@ For **most other use cases**, however, you probably want the latest, most recent
 
 ## Changes in this fork
 - Windows support (still need to install `wget` and `cwRsync` (cwRsync tested with 5.4.1)
-- Fixed stuffs in original code:
+- Patched stuffs in original code:
+  - unwanted garbage in bookshelves info (probably due to Project Gutenberg website updating)
   - oversights (bookshelves info are never fetched, nltk missing download, utf-8 decoding error in ebook header, etc.)
   - bugs & typos
 - Parallelised text processing
 - Additional arguments for customisation (see [**Usage**](#usage) section)
 > **Note:**
 > this fork has only been tested on Windows (yet), but should work on other platforms unless the original code doesn't work in the first place?
+
+## Todo
+- Better tokenisation rules?
+  - Chinese books are all empty after tokenisation -> use jieba, probably?
+  - Only tokens that return `True` for `str.isalpha()` are kept currently
+- Faster method for getting bookselves info?
+
 
 ## Installation
 :warning: **Python 2.x is not supported** Please make sure your system runs Python 3.x. (https://pythonclock.org/).  
