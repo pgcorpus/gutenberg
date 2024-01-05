@@ -87,13 +87,13 @@ if __name__ == '__main__':
     # rsync command
     parser.add_argument(
         "--procedures",
-        help='''Procedures to go through, defaults to \"pdlmb\": 
-        - [p]ull mirror files
-        - find [d]uplicates
-        - hard [l]ink from mirror to raw
-        - get [m]etadata
-        - get [b]ookshelf information
-        - [s]tore bookshelf information''',
+        help='''Procedures to go through, defaults to \"pdlmbs\":
+        [p]ull mirror files;
+        find [d]uplicates;
+        hard [l]ink from mirror to raw;
+        get [m]etadata;
+        get [b]ookshelf information;
+        [s]tore bookshelf information''',
         default='pdlmbs',
         type=str)
 
