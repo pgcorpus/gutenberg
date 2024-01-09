@@ -7,7 +7,19 @@ import numpy as np
 import pandas as pd
 import lxml.html
 import subprocess
+import shutil
+from .utils import is_win32
 
+def rm_dir(*args):
+    subprocess.call(["rm", "-rf"] + args)
+
+if is_win32:
+    rm_dir = shutil.rmtree
+    def rm_pattern(path):
+        for file in glob.glob(path.replace('/', os.path.sep)):
+            os.remove(file)
+else:
+    rm_pattern = rm_dir
 
 def get_bookshelves():
     """
@@ -19,8 +31,8 @@ def get_bookshelves():
 
     """
     sp_args = ["wget",
-               "--random-wait", "-r", 
-               "-p", "--no-parent", 
+               "--random-wait", "-r",
+               "--no-parent", 
                "-e", "robots=off", 
                "-U", "mozilla", 
                "https://www.gutenberg.org/ebooks/bookshelf/"
@@ -28,21 +40,25 @@ def get_bookshelves():
     subprocess.call(sp_args)
 
     # move it to metadata dir
-    sp_args = "mv www.gutenberg.org/ebooks/bookshelf/* metadata/bookshelves_html/"
-    subprocess.call(sp_args, shell=True)
+    if is_win32:
+        dst = "metadata/bookshelves_html/"
+        if not os.path.exists(dst):
+            os.mkdir(dst)
+        for src_path in glob.glob("www.gutenberg.org/ebooks/bookshelf/*"):
+            shutil.move(src_path, dst)
+    else:
+        sp_args = "mv www.gutenberg.org/ebooks/bookshelf/* metadata/bookshelves_html/"
+        subprocess.call(sp_args, shell=True)
 
     # cleanup
-    sp_args = ["rm", "-rf", "www.gutenberg.org"]
-    subprocess.call(sp_args)
+    if os.path.exists("www.gutenberg.org"):
+        rm_dir("www.gutenberg.org")
     # in the new version of the website and with these parameters of the wget (gets also other links within the crawled page)
     # we get also other files, copy of the bookshelves but with different ordering
     # remove them
-    sp_args = ["rm", "-rf", "metadata/bookshelves_html/*.opds*"]
-    subprocess.call(sp_args)
-    sp_args = ["rm", "-rf", "metadata/bookshelves_html/*?sort*"]
-    subprocess.call(sp_args)
-    sp_args = ["rm", "-rf", "metadata/bookshelves_html/*?start*"]
-    subprocess.call(sp_args)
+    rm_pattern("metadata/bookshelves_html/*.opds*")
+    rm_pattern("metadata/bookshelves_html/*?sort*")
+    rm_pattern("metadata/bookshelves_html/*?start*")
     return None
 
 def parse_bookshelves():
@@ -57,21 +73,23 @@ def parse_bookshelves():
     """
     # parse the data
     BS_paths = glob.glob("metadata/bookshelves_html/*")
-    BS = [path.split("/")[-1] for path in BS_paths]
+    # BS = [os.path.split(path)[-1] for path in BS_paths]
 
     BS_dict = {}
     BS_num_to_category_str_dict = {}
     for path in BS_paths:
-        bs = path.split("/")[-1]
+        _, bs = os.path.split(path)
+        PG_header = '' if bs == "index.html" else "PG"
         BS_dict[bs] = []
         with open(path, "r", encoding="UTF-8") as foo:
-            dom = lxml.html.fromstring(foo.read())
+            dom = lxml.html.parse(path)
             # select the url in href for all a tags(links)
             for link in dom.xpath('//a/@href'):
                 # links to ebooks that are not searches
                 if link.find("ebooks") > -1 and link.find("search") == -1:
-                    PGid = "PG"+link.split("/")[-1]
-                    BS_dict[bs].append(PGid)
+                    book_id = link.split("/")[-1]
+                    if book_id.isdigit():
+                        BS_dict[bs].append(PG_header + book_id)
             # get title of the category
             title_categories = dom.findall('.//title') # './/title' finds recursively the element with tag 'title'
             # check if there is only one title in the metadata of the category

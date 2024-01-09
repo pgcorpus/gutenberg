@@ -14,7 +14,8 @@ def process_book(
 	cleanup_f=strip_headers,
     overwrite_all=False,
     language="english",
-    log_file=""
+    log_file="",
+    ignore=False
 	):
     """
     Process a book, from raw data to counts.
@@ -39,6 +40,9 @@ def process_book(
     ----------
     overwrite_all : bool
         If set to True, everything is processed regargless of existing files.
+    ignore : bool
+        If set to True, ignores UTF-8 decoding errors for "technically UTF-8" codecs
+        such as Windows-1252, enabling this shouldn't lead to the loss of any token
     """
     if text_dir is None:
         raise ValueError("You must specify a path to save the text files.")
@@ -53,14 +57,15 @@ def process_book(
         raise ValueError("You must specify a path to the raw file to process.")
    
     # get PG number
-    PG_number = path_to_raw_file.split("/")[-1].split("_")[0][2:]
+    PG_number = os.path.split(path_to_raw_file)[-1].split("_")[0][2:]
 
     if overwrite_all or\
         (not os.path.isfile(os.path.join(text_dir,"PG%s_text.txt"%PG_number))) or \
         (not os.path.isfile(os.path.join(tokens_dir,"PG%s_tokens.txt"%PG_number))) or \
         (not os.path.isfile(os.path.join(counts_dir,"PG%s_counts.txt"%PG_number))):
         # read raw file
-        with io.open(path_to_raw_file, encoding="UTF-8") as f:
+        with io.open(path_to_raw_file, encoding="UTF-8", 
+                     errors="ignore" if ignore else "strict") as f:
             text = f.read()
 
         # clean it up
@@ -93,6 +98,5 @@ def process_book(
             clean_nl = clean.count("\n")
             L = len(tokens)
             V = len(counts)
-            with io.open(log_file, "a") as f:
-               f.write("PG"+str(PG_number)+"\t"+language+"\t"+str(raw_nl)+"\t"+str(clean_nl)+"\t"+str(L)+"\t"+str(V)+"\n")
+            return "PG"+str(PG_number)+"\t"+language+"\t"+str(raw_nl)+"\t"+str(clean_nl)+"\t"+str(L)+"\t"+str(V)+"\n"
                 

@@ -3,6 +3,11 @@ import os
 import shutil
 import subprocess
 import glob
+import io
+from sys import platform
+
+# add support for windows
+is_win32 = platform.casefold() == "win32"
 
 def get_langs_dict():
     """
@@ -64,7 +69,7 @@ def list_duplicates_in_mirror(
     dups_list = []
     for dirName, subdirList, fileList in os.walk(mirror_dir):
         for matchpath in glob.iglob(os.path.join(dirName,"*-0.txt")):
-            fname = matchpath.split("/")[-1]
+            _, fname = os.path.split(matchpath)
             # fname must have exactly one "." and one "-"
             if (len(fname.split("."))==2 and len(fname.split("-"))==2):
                 PGnumber = get_PG_number(fname)
@@ -97,10 +102,24 @@ def populate_raw_from_mirror(mirror_dir=None,
         Files in this list are not copied into raw.
 
     """
-    for dirName, subdirList, fileList in os.walk(mirror_dir):
+    
+    # for non-Windows environments
+    def hard_link(src: str, tgt: str):
+        if (not os.path.isfile(tgt)) or overwrite:
+            subprocess.call(["ln", "-f", src, tgt])
+
+    # for Windows environments
+    if is_win32:
+        def win_hard_link(src: str, tgt: str):
+            if os.path.isfile(tgt) and overwrite:
+                subprocess.call(["del", tgt])
+            subprocess.call("mklink /H %s %s" % (tgt, src), shell=True)
+        hard_link = win_hard_link
+
+    for dirName, _, _ in os.walk(mirror_dir):
         # patterns to match are 12345-0.txt or pg12345.txt.utf8
         for matchpath in glob.iglob(os.path.join(dirName, "[p123456789][g0123456789][0-9]*")):
-            fname = matchpath.split("/")[-1]
+            _, fname = os.path.split(matchpath)
             # check that file is not in dups_list
             if matchpath not in dups_list:
                 # avoid files with more "." or "-" than expected
@@ -112,12 +131,38 @@ def populate_raw_from_mirror(mirror_dir=None,
                     source = os.path.join(dirName, fname)
                     target = os.path.join(raw_dir, "PG"+PGnumber+"_raw.txt")
 
-                    if (not os.path.isfile(target)) or overwrite:
-                        subprocess.call(["ln", "-f", source, target])
+                    hard_link(source, target)
 
             # if file was not in dupes list and we are not quiet
             elif not quiet:
                 print("# WARNING: file %s skipped due to duplication" % fname)
 
+def remove_empty_dirs(path: str, quiet: bool=False):
+    """
+    Removes empty directories in specified path
 
+    Parameters
+    ----------
+    path : str
+        the path to clean
+    quiet : bool
+        whether to notify the deletion
 
+    """
+    # Check if the given path is a directory
+    if not os.path.isdir(path):
+        print(f"Error: {path} is not a valid directory.")
+        return
+
+    # Recursively remove empty subdirectories
+    for dirName, subdirList, _ in os.walk(path, topdown=False):
+        for subdir in subdirList:
+            subdir_path = os.path.join(dirName, subdir)
+            if not os.listdir(subdir_path):  # Check if the directory is empty
+                os.rmdir(subdir_path)        # Remove the empty directory
+                if not quiet:
+                    print(f"Removed empty directory: {subdir_path}")
+
+def check_not_empty(fname: str) -> bool:
+    with io.open(fname, errors="ignore", encoding="utf-8") as f:
+        return bool(f.read().strip())
