@@ -103,7 +103,7 @@ if __name__ == '__main__':
                "--include", "*/",
                "--include", "[p123456789][g0123456789]%s[.-][t0][x.]t[x.]*[t8]" % args.pattern,
                "--exclude", "*",
-               "aleph.gutenberg.org::gutenberg", args.mirror
+               "gutenberg.pglaf.org::gutenberg", args.mirror
                ]
     subprocess.call(sp_args)
 
